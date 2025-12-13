@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Digital | The Night Bar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="hero">
+        <div class="overlay">
+            <div class="hero-content">
+                <div class="logo-area">
+                    <h1>THE NIGHT BAR</h1>
+                    <p class="slogan">Cocteles • Tapas • Buena Música</p>
+                </div>
+
+                <div class="status-container">
+                    <span id="status-badge" class="badge">Consultando...</span>
+                    <p class="hours">Hoy: 6:00 PM - 2:00 AM</p>
+                </div>
+
+                <div class="contact-info">
+                    <p><span class="material-icons tiny">location_on</span> Calle Independencia #123, Sancti Spíritus</p>
+                    <p><span class="material-icons tiny">phone</span> +53 5000 0000</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="filters" id="navbar">
+        <button class="filter-btn active" onclick="filterMenu('todos')">Todos</button>
+        <button class="filter-btn" onclick="filterMenu('cocteles')">Cocteles</button>
+        <button class="filter-btn" onclick="filterMenu('cervezas')">Cervezas</button>
+        <button class="filter-btn" onclick="filterMenu('tapas')">Para Picar</button>
+    </nav>
+
+    <main class="container">
+        <div class="menu-grid">
+
+            <div class="card item" data-category="cocteles" data-title="Mojito Cubano" data-price="350 CUP" data-img="img/mojito.avif" data-desc="El clásico. Ron Havana Club 3 Años, hierbabuena fresca, azúcar, limón y soda.">
+                <div class="img-box"><img src="img/mojito.avif" alt="Mojito"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Mojito Cubano</h3> <span class="price">350</span></div>
+                    <p class="short-desc">Ron, Hierbabuena, Limón.</p>
+                </div>
+            </div>
+
+            <div class="card item" data-category="cocteles" data-title="Piña Colada" data-price="400 CUP" data-img="img/pina.webp" data-desc="Crema de coco natural, jugo de piña fresco y Ron Blanco. Decorado con piña.">
+                <div class="img-box"><img src="img/pina.webp" alt="Piña Colada"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Piña Colada</h3> <span class="price">400</span></div>
+                    <p class="short-desc">Coco, Piña, Ron.</p>
+                </div>
+            </div>
+
+            <div class="card item" data-category="cocteles" data-title="Daiquiri Frappé" data-price="380 CUP" data-img="img/daiquiri.avif.">
+                <div class="img-box"><img src="img/daiquiri.avif" alt="Daiquiri"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Daiquiri</h3> <span class="price">380</span></div>
+                    <p class="short-desc">Refrescante y granizado.</p>
+                </div>
+            </div>
+
+            <div class="card item" data-category="cervezas" data-title="Cerveza Cristal" data-price="250 CUP" data-img="img/cereveza.avif" data-desc="La preferida de Cuba. Lager clara y refrescante. (Sujeto a disponibilidad).">
+                <div class="img-box"><img src="img/cereveza.avif" alt="Cerveza"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Cerveza Nacional</h3> <span class="price">250</span></div>
+                    <p class="short-desc">Bien fría.</p>
+                </div>
+            </div>
+
+            <div class="card item" data-category="cervezas" data-title="Cerveza Importada" data-price="300 CUP" data-img="img/cerveza2.avif" data-desc="Heineken, Corona o similar según disponibilidad en barra.">
+                <div class="img-box"><img src="img/cerveza2.avif" alt="Importada"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Importada</h3> <span class="price">300</span></div>
+                    <p class="short-desc">Preguntar marcas.</p>
+                </div>
+            </div>
+
+            <div class="card item" data-category="tapas" data-title="Tostones Rellenos" data-price="450 CUP" data-img="img/tostones.webp" data-desc="3 Tostones grandes rellenos de ropa vieja o jamón y queso gratinado.">
+                <div class="img-box"><img src="img/tostones.webp" alt="Tostones"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Tostones Rellenos</h3> <span class="price">450</span></div>
+                    <p class="short-desc">Con ropa vieja o queso.</p>
+                </div>
+            </div>
+
+            <div class="card item" data-category="tapas" data-title="Tabla de Quesos" data-price="800 CUP" data-img="img/tabla.webp" data-desc="Selección de quesos gouda, azul y blanco con aceitunas y jamón serrano.">
+                <div class="img-box"><img src="img/tabla.webp" alt="Tabla"></div>
+                <div class="info">
+                    <div class="row">
+                        <h3>Tabla Mixta</h3> <span class="price">800</span></div>
+                    <p class="short-desc">Ideal para compartir.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>The Night Bar © 2025</p>
+        <div class="agency-signature">
+            <p>Diseñado y Desarrollado por</p>
+            <span class="agency-link">🚀 AGENCIA SEÑORES</span>
+        </div>
+    </footer>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <img id="modal-img" src="" alt="Detalle">
+            <div class="modal-body">
+                <h2 id="modal-title">Titulo</h2>
+                <p id="modal-desc">Descripción...</p>
+                <div class="modal-footer">
+                    <span id="modal-price" class="big-price">0 CUP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
