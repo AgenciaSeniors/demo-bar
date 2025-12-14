@@ -91,7 +91,10 @@ body::before {
     padding: 10px 20px; border-radius: 12px; 
     font-size: 0.85rem; font-weight: 600; white-space: nowrap; 
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    cursor: pointer;
+}
+.filter-btn.active { 
+    background: var(--gold); color: black; border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); transform: scale(1.05);
 }
 
 /* --- GRID DE PRODUCTOS --- */
