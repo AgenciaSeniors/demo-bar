@@ -104,12 +104,29 @@ body::before {
 .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
 
 .card { 
-    background: var(--bg-surface); border-radius: 20px; overflow: hidden; 
-    border: var(--border-glass); position: relative; cursor: pointer;
-    transition: all 0.4s ease;
+    background: var(--bg-surface); 
+    border-radius: 20px; 
+    overflow: hidden; 
+    border: var(--border-glass); 
+    position: relative; 
+    cursor: pointer;
+    transition: all 0.3s ease; /* Transición suave solo para el hover */
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    
+    /* CORRECCIÓN: Forzamos que sea visible siempre */
+    opacity: 1 !important; 
+    transform: translateY(0) !important;
 }
-.card:active { transform: scale(0.96); }
+
+.card:hover { 
+    transform: translateY(-5px) !important; 
+    box-shadow: 0 10px 25px -10px rgba(212, 175, 55, 0.2); 
+    border-color: var(--gold);
+}
+
+.card:active { 
+    transform: scale(0.98) !important; 
+}
 
 .img-box { height: 160px; overflow: hidden; position: relative; }
 .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; }
