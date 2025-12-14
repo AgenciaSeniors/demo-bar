@@ -1,29 +1,22 @@
-// --- script.js ---
-// Configuración viene de config.js. NO repetir aquí.
+// --- script.js CORREGIDO ---
 
 let searchTimeout;
 let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if(!container) return;
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${type === 'success' ? '✅' : 'ℹ️'}</span> <span>${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity='0'; setTimeout(()=>toast.remove(),300); }, 3000);
-}
-
 // 1. CARGAR MENÚ
 async function cargarMenu() {
     const grid = document.getElementById('menu-grid');
-    if (grid) grid.innerHTML = Array(6).fill('<div class="skeleton" style="height:160px; background:#222; border-radius:18px; margin-bottom:10px; opacity:0.5; animation:pulse 1s infinite;"></div>').join('');
+    // Loader visible
+    if (grid) grid.innerHTML = '<p style="text-align:center; color:#888; grid-column:1/-1; padding:40px;">Cargando carta...</p>';
 
     try {
-        if (typeof supabaseClient === 'undefined') throw new Error("Supabase off");
+        if (typeof supabaseClient === 'undefined') {
+            throw new Error("Error: Supabase no está conectado.");
+        }
 
+        // Cargar productos
         let { data: productos, error } = await supabaseClient
             .from('productos')
             .select(`*, opiniones(puntuacion)`)
@@ -33,6 +26,7 @@ async function cargarMenu() {
 
         if (error) throw error;
 
+        // Calcular ratings
         todosLosProductos = productos.map(prod => {
             const opiniones = prod.opiniones || [];
             const total = opiniones.length;
@@ -42,34 +36,36 @@ async function cargarMenu() {
         });
 
     } catch (err) {
-        console.error(err);
-        // Fallback
+        console.error("Error cargando:", err);
+        // Fallback de seguridad
         try {
             let { data: simple } = await supabaseClient.from('productos').select('*').eq('activo', true);
-            if(simple) todosLosProductos = simple;
-        } catch(e){}
+            if (simple) todosLosProductos = simple;
+        } catch (e) {}
     }
 
     renderizarMenu(todosLosProductos);
 }
 
-// 2. RENDERIZAR
+// 2. RENDERIZAR (SIN ANIMACIONES OCULTAS)
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
     if (!contenedor) return;
+    
     contenedor.innerHTML = '';
 
     if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:#666;">Sin resultados 🍸</div>';
+        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía</h4><p>No hay productos disponibles.</p></div>';
         return;
     }
 
-    const html = lista.map((item, index) => {
+    const html = lista.map(item => {
         const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
-        const img = item.imagen_url || 'https://via.placeholder.com/300';
-        const badge = item.destacado ? `<span class="badge-destacado">TOP</span>` : '';
+        const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
+        const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
         const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : 'Nuevo';
         
+        // CORRECCIÓN: Eliminado el style="animation..." y opacity:0
         return `
             <div class="card ${claseAgotado}" onclick="abrirDetalle(${item.id})">
                 ${badge}
@@ -94,88 +90,111 @@ function abrirDetalle(id) {
     productoActual = todosLosProductos.find(p => p.id === id);
     if (!productoActual) return;
 
-    document.getElementById('det-img').src = productoActual.imagen_url || '';
-    document.getElementById('det-titulo').textContent = productoActual.nombre;
-    document.getElementById('det-desc').textContent = productoActual.descripcion;
-    document.getElementById('det-precio').textContent = `$${productoActual.precio}`;
-    document.getElementById('det-rating-big').textContent = productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --';
-
+    const imgEl = document.getElementById('det-img');
     const box = document.getElementById('box-curiosidad');
+    
+    if(imgEl) imgEl.src = productoActual.imagen_url || '';
+    setText('det-titulo', productoActual.nombre);
+    setText('det-desc', productoActual.descripcion);
+    setText('det-precio', `$${productoActual.precio}`);
+    setText('det-rating-big', productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --');
+
     if (productoActual.curiosidad && productoActual.curiosidad.length > 5) {
-        box.style.display = "block";
-        document.getElementById('det-curiosidad').textContent = productoActual.curiosidad;
+        if(box) box.style.display = "flex";
+        setText('det-curiosidad', productoActual.curiosidad);
     } else {
-        box.style.display = "none";
+        if(box) box.style.display = "none";
     }
     
     const modal = document.getElementById('modal-detalle');
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('active'), 10);
+    if(modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+}
+
+function setText(id, text) {
+    const el = document.getElementById(id);
+    if(el) el.textContent = text;
 }
 
 function cerrarDetalle() {
     const modal = document.getElementById('modal-detalle');
-    modal.classList.remove('active');
-    setTimeout(() => modal.style.display = 'none', 300);
+    if(modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
 }
 
 // 4. OPINIONES
 function abrirOpinionDesdeDetalle() {
     cerrarDetalle();
     const modal = document.getElementById('modal-opinion');
-    modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('active'), 10);
-    puntuacion = 0;
-    actualizarEstrellas();
+    if(modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+        puntuacion = 0;
+        actualizarEstrellas();
+    }
 }
 
 function cerrarModalOpiniones() {
     const modal = document.getElementById('modal-opinion');
-    modal.classList.remove('active');
-    setTimeout(() => modal.style.display = 'none', 300);
+    if(modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+const starsContainer = document.getElementById('stars-container');
+if(starsContainer) {
+    starsContainer.addEventListener('click', (e) => {
+        if (e.target.tagName === 'SPAN') {
+            puntuacion = parseInt(e.target.dataset.val);
+            actualizarEstrellas();
+        }
+    });
 }
 
 function actualizarEstrellas() {
     document.querySelectorAll('#stars-container span').forEach(s => {
         const val = parseInt(s.dataset.val);
         s.style.color = val <= puntuacion ? 'var(--gold)' : '#444';
+        s.textContent = val <= puntuacion ? '★' : '☆';
     });
 }
-document.getElementById('stars-container').addEventListener('click', (e) => {
-    if (e.target.tagName === 'SPAN') {
-        puntuacion = parseInt(e.target.dataset.val);
-        actualizarEstrellas();
-    }
-});
 
 async function enviarOpinion() {
-    if (puntuacion === 0) { showToast("Selecciona estrellas", "error"); return; }
+    if (puntuacion === 0) { alert("¡Puntúa con estrellas!"); return; }
     
-    const btn = document.getElementById('btn-enviar-opinion');
-    btn.textContent = "Enviando..."; btn.disabled = true;
+    const nombre = document.getElementById('cliente-nombre').value || "Anónimo";
+    const comentario = document.getElementById('cliente-comentario').value;
+    const btn = document.querySelector('#modal-opinion .btn-big-action');
+
+    if(btn) { btn.textContent = "Enviando..."; btn.disabled = true; }
 
     const { error } = await supabaseClient.from('opiniones').insert([{
         producto_id: productoActual.id,
-        cliente_nombre: document.getElementById('cliente-nombre').value || "Anónimo",
-        comentario: document.getElementById('cliente-comentario').value,
+        cliente_nombre: nombre,
+        comentario: comentario,
         puntuacion: puntuacion
     }]);
 
     if (!error) {
-        showToast("¡Gracias!", "success");
+        alert("¡Gracias!");
         cerrarModalOpiniones();
+        document.getElementById('cliente-comentario').value = "";
         cargarMenu(); 
     } else {
-        showToast("Error al enviar", "error");
+        alert("Error: " + error.message);
     }
-    btn.textContent = "ENVIAR"; btn.disabled = false;
+    if(btn) { btn.textContent = "ENVIAR"; btn.disabled = false; }
 }
 
 // 5. FILTROS
 function filtrar(cat, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
-    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     
     const searchInput = document.getElementById('search-input');
     if(searchInput) searchInput.value = '';
@@ -184,13 +203,19 @@ function filtrar(cat, btn) {
     renderizarMenu(lista);
 }
 
-document.getElementById('search-input').addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    const term = e.target.value.toLowerCase();
-    searchTimeout = setTimeout(() => {
-        const lista = todosLosProductos.filter(p => p.nombre.toLowerCase().includes(term));
-        renderizarMenu(lista);
-    }, 300);
-});
+const searchInput = document.getElementById('search-input');
+if(searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const term = e.target.value.toLowerCase();
+        searchTimeout = setTimeout(() => {
+            const lista = todosLosProductos.filter(p => 
+                p.nombre.toLowerCase().includes(term) || 
+                (p.descripcion && p.descripcion.toLowerCase().includes(term))
+            );
+            renderizarMenu(lista);
+        }, 300);
+    });
+}
 
 document.addEventListener('DOMContentLoaded', cargarMenu);
