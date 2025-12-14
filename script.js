@@ -1,107 +1,82 @@
-// CONFIGURACIÓN (Tus claves reales)
-const CONFIG = {
-    SUPABASE_URL: 'https://qspwtmfmolvqlzsbwlzv.supabase.co',
-    SUPABASE_KEY: 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU',
-    GEMINI_KEY: 'AIzaSyCXWHwntRNF_IcZAjPPJyARZp_uAhn8QL8'
-};
-
-const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
-
+// Variable para debounce (optimización de búsqueda)
 let searchTimeout;
 let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-// --- SISTEMA DE NOTIFICACIONES (TOAST) ---
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    
-    let icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
-    
-    toast.innerHTML = `<span>${icon}</span> <span style="font-size:0.9rem">${message}</span>`;
-    container.appendChild(toast);
-
-    // Sonido sutil (opcional)
-    // const audio = new Audio('pop.mp3'); audio.play();
-
-    // Eliminar después de 3s
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// 1. CARGAR MENÚ (Con Skeleton)
+// 1. CARGAR MENÚ CON JOIN DE OPINIONES (Optimizado)
 async function cargarMenu() {
-    const grid = document.getElementById('menu-grid');
-    // Mostrar Skeletons mientras carga
-    grid.innerHTML = Array(6).fill('<div class="skeleton skeleton-card"></div>').join('');
-
+    // Pedimos productos y sus opiniones en una sola llamada para calcular rating
     let { data: productos, error } = await supabaseClient
         .from('productos')
         .select(`*, opiniones(puntuacion)`)
         .eq('activo', true)
-        .order('destacado', { ascending: false })
-        .order('id', { ascending: false });
+        .order('destacado', { ascending: false });
 
-    if (error) { 
-        showToast("Error al cargar el menú", "error");
-        grid.innerHTML = '<p style="text-align:center; color:#666">Error de conexión.</p>';
-        return; 
-    }
+    if (error) { console.error("Error:", error); return; }
 
-    // Calcular ratings
+    // Procesamos el rating promedio en el cliente para no sobrecargar la BD
     todosLosProductos = productos.map(prod => {
-        const total = prod.opiniones.length;
+        const totalOps = prod.opiniones.length;
         const suma = prod.opiniones.reduce((acc, curr) => acc + curr.puntuacion, 0);
-        prod.ratingPromedio = total ? (suma / total).toFixed(1) : null;
+        prod.ratingPromedio = totalOps ? (suma / totalOps).toFixed(1) : null;
         return prod;
     });
 
     renderizarMenu(todosLosProductos);
 }
 
-// 2. RENDERIZAR (Animado)
+// ... (El resto del código de cargarMenu y lógica sigue igual) ...
+
+// RENDERIZADO AJUSTADO AL NUEVO DISEÑO
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
-    contenedor.innerHTML = '';
-
+    
     if (lista.length === 0) {
-        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>🤷‍♂️ Sin resultados</h4><p>Intenta con otra palabra</p></div>';
+        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:#666;"><h4>Ups, nada por aquí 🍸</h4><p>Prueba buscando otra cosa.</p></div>';
         return;
     }
 
-    // Añadir delay progresivo a la animación
-    let html = '';
-    lista.forEach((item, index) => {
+    const htmlString = lista.map((item, index) => {
         const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
-        const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
-        const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
-        const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : '★ Nuevo';
-        const delay = index * 0.05; // 50ms de retraso entre cada carta
+        const img = item.imagen_url || 'https://via.placeholder.com/300';
+        const badge = item.destacado ? `<span class="badge-destacado">TOP</span>` : '';
+        const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : 'Nuevo';
+        
+        // Animación escalonada (staggered)
+        const delay = index * 0.05;
 
-        html += `
-            <div class="card ${claseAgotado}" style="animation-delay: ${delay}s" onclick="abrirDetalle(${item.id})">
+        return `
+            <div class="card ${claseAgotado}" style="animation: fadeUp 0.6s forwards ${delay}s; opacity: 0;" onclick="abrirDetalle(${item.id})">
                 ${badge}
                 <div class="img-box"><img src="${img}" loading="lazy" alt="${item.nombre}"></div>
                 <div class="info">
                     <h3>${item.nombre}</h3>
                     <p class="short-desc">${item.descripcion || ''}</p>
-                    <div class="price-row">
+                    <div class="card-footer">
                          <span class="price">$${item.precio}</span>
-                         <span class="rating-mini">${rating}</span>
+                         <span class="rating-pill">${rating}</span>
                     </div>
                 </div>
             </div>
         `;
-    });
-    contenedor.innerHTML = html;
+    }).join('');
+
+    contenedor.innerHTML = htmlString;
 }
 
-// 3. MODALES (Con clases activas)
+// ... (Asegúrate de agregar también esta línea dentro de abrirDetalle para el rating grande) ...
+function abrirDetalle(id) {
+    // ... código anterior ...
+    
+    // NUEVO: Poner el rating en el modal grande
+    const ratingBig = productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --';
+    document.getElementById('det-rating-big').textContent = ratingBig;
+
+    // ... resto del código ...
+}
+
+// 3. DETALLE OPTIMIZADO
 function abrirDetalle(id) {
     productoActual = todosLosProductos.find(p => p.id === id);
     if (!productoActual) return;
@@ -111,62 +86,52 @@ function abrirDetalle(id) {
     document.getElementById('det-desc').textContent = productoActual.descripcion;
     document.getElementById('det-precio').textContent = `$${productoActual.precio}`;
     
-    // Curiosidad
+    const ratingText = productoActual.ratingPromedio ? `⭐ ${productoActual.ratingPromedio} / 5` : '⭐ Sé el primero en opinar';
+    document.getElementById('det-rating').textContent = ratingText;
+
+    const curiosidad = productoActual.curiosidad;
     const box = document.getElementById('box-curiosidad');
-    const textoCuriosidad = document.getElementById('det-curiosidad');
-    if (productoActual.curiosidad && productoActual.curiosidad.length > 5) {
+    if (curiosidad && curiosidad.length > 5) {
         box.style.display = "flex";
-        textoCuriosidad.textContent = productoActual.curiosidad;
+        document.getElementById('det-curiosidad').textContent = curiosidad;
     } else {
         box.style.display = "none";
     }
     
-    const modal = document.getElementById('modal-detalle');
-    modal.classList.add('active'); // Usamos clase para animar
+    document.getElementById('modal-detalle').style.display = 'flex';
 }
-
-function cerrarDetalle() {
-    document.getElementById('modal-detalle').classList.remove('active');
-}
+function cerrarDetalle() { document.getElementById('modal-detalle').style.display = 'none'; }
 
 // 4. OPINIONES
-function abrirOpinion() {
+function abrirOpinionDesdeDetalle() {
     cerrarDetalle();
-    const modal = document.getElementById('modal-opinion');
-    modal.classList.add('active');
+    document.getElementById('modal-opinion').style.display = 'flex';
     puntuacion = 0;
     actualizarEstrellas();
 }
+function cerrarModalOpiniones() { document.getElementById('modal-opinion').style.display = 'none'; }
 
-function cerrarModalOpinion() {
-    document.getElementById('modal-opinion').classList.remove('active');
-}
-
-// Estrellas
+// Delegación de eventos para estrellas
 document.getElementById('stars-container').addEventListener('click', (e) => {
     if (e.target.tagName === 'SPAN') {
         puntuacion = parseInt(e.target.dataset.val);
         actualizarEstrellas();
-        // Feedback visual
-        e.target.style.transform = "scale(1.3)";
-        setTimeout(()=>e.target.style.transform = "scale(1)", 200);
     }
 });
 
 function actualizarEstrellas() {
-    document.querySelectorAll('#stars-container span').forEach(s => {
-        const val = parseInt(s.dataset.val);
-        s.style.color = val <= puntuacion ? 'var(--gold)' : '#444';
-        s.textContent = val <= puntuacion ? '★' : '☆'; // Llenas vs vacías
+    const estrellas = document.querySelectorAll('#stars-container span');
+    estrellas.forEach(s => {
+        s.style.color = parseInt(s.dataset.val) <= puntuacion ? 'var(--gold)' : '#444';
     });
 }
 
 async function enviarOpinion() {
-    if (puntuacion === 0) { showToast("¡Toca las estrellas para calificar!", "error"); return; }
+    if (puntuacion === 0) { alert("¡Por favor toca las estrellas para puntuar!"); return; }
     
-    const nombre = document.getElementById('cliente-nombre').value || "Anónimo";
+    const nombre = document.getElementById('cliente-nombre').value || "Cliente Anónimo";
     const comentario = document.getElementById('cliente-comentario').value;
-    const btn = document.getElementById('btn-enviar-opinion');
+    const btn = document.querySelector('.btn-primary'); // Botón del modal opinion
 
     btn.textContent = "Enviando..."; btn.disabled = true;
 
@@ -178,25 +143,20 @@ async function enviarOpinion() {
     }]);
 
     if (!error) {
-        showToast("¡Gracias por tu opinión!", "success");
-        cerrarModalOpinion();
-        document.getElementById('cliente-comentario').value = "";
+        alert("¡Gracias por tu opinión!");
+        cerrarModalOpiniones();
+        // Recargar menú para actualizar promedio
         cargarMenu(); 
     } else {
-        showToast("Error al enviar.", "error");
+        alert("Error al enviar: " + error.message);
     }
     btn.textContent = "ENVIAR RESEÑA"; btn.disabled = false;
 }
 
-// 5. FILTROS & BUSCADOR
+// 5. FILTROS & BUSCADOR CON DEBOUNCE
 function filtrar(cat, btn) {
-    // Animación botón activo
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    
-    // Scroll suave al botón
-    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-
     document.getElementById('search-input').value = '';
     
     const lista = cat === 'todos' ? todosLosProductos : todosLosProductos.filter(p => p.categoria === cat);
@@ -206,6 +166,8 @@ function filtrar(cat, btn) {
 document.getElementById('search-input').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const term = e.target.value.toLowerCase();
+    
+    // Esperamos 300ms antes de filtrar para no saturar el navegador
     searchTimeout = setTimeout(() => {
         const lista = todosLosProductos.filter(p => 
             p.nombre.toLowerCase().includes(term) || 

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Menú Digital | The Night Bar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
+    <title>The Night Bar | Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
@@ -17,82 +17,91 @@
         <div class="overlay">
             <div class="logo-area">
                 <h1>THE NIGHT BAR</h1>
-                <p>Experiencia Gastronómica</p>
+                <p>Coctelería de Autor & Gastronomía</p>
             </div>
         </div>
     </header>
 
-    <div class="search-container">
+    <div class="search-wrapper">
         <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="¿Qué se te antoja hoy?">
+            <span class="search-icon">✦</span> <input type="text" id="search-input" placeholder="Buscar cocteles, platos...">
         </div>
     </div>
 
-    <nav class="filters">
-        <button class="filter-btn active" onclick="filtrar('todos', this)">⭐ Todo</button>
-        <button class="filter-btn" onclick="filtrar('cocteles', this)">🍸 Cocteles</button>
-        <button class="filter-btn" onclick="filtrar('cervezas', this)">🍺 Cervezas</button>
-        <button class="filter-btn" onclick="filtrar('licores', this)">🍷 Vinos</button>
-        <button class="filter-btn" onclick="filtrar('bebidas_sin', this)">🥤 Jugos</button>
-        <button class="filter-btn" onclick="filtrar('italiana', this)">🍕 Pizzas</button>
-        <button class="filter-btn" onclick="filtrar('fuertes', this)">🍖 Fuertes</button>
-        <button class="filter-btn" onclick="filtrar('tapas', this)">🍟 Picar</button>
-    </nav>
+    <div class="filters-container">
+        <nav class="filters">
+            <button class="filter-btn active" onclick="filtrar('todos', this)">Todo</button>
+            <button class="filter-btn" onclick="filtrar('cocteles', this)">Cocteles</button>
+            <button class="filter-btn" onclick="filtrar('cervezas', this)">Cervezas</button>
+            <button class="filter-btn" onclick="filtrar('licores', this)">Vinos</button>
+            <button class="filter-btn" onclick="filtrar('bebidas_sin', this)">Sin Alcohol</button>
+            <button class="filter-btn" onclick="filtrar('italiana', this)">Italiana</button>
+            <button class="filter-btn" onclick="filtrar('fuertes', this)">Platos Fuertes</button>
+            <button class="filter-btn" onclick="filtrar('tapas', this)">Tapas</button>
+        </nav>
+    </div>
 
     <main class="container">
+        <h3 class="section-title">Carta</h3>
         <div id="menu-grid" class="menu-grid">
             </div>
     </main>
 
     <footer>
-        <p>The Night Bar © 2025</p>
-        <a href="login.html" class="admin-link">🔒 Zona Gerencial</a>
+        <p style="opacity: 0.5;">The Night Bar © 2025</p>
+        <div style="margin-top: 20px;">
+            <a href="login.html" style="color: #444; text-decoration: none; font-size: 0.8rem; border: 1px solid #333; padding: 10px 20px; border-radius: 30px;">Admin Login</a>
+        </div>
     </footer>
 
     <div id="modal-detalle" class="modal" onclick="if(event.target == this) cerrarDetalle()">
         <div class="modal-content">
-            <span class="close-btn" onclick="cerrarDetalle()">×</span>
-            <div class="detalle-img-box">
-                <img id="det-img" src="" alt="">
-            </div>
-            <div class="detalle-body">
-                <h2 id="det-titulo">Titulo</h2>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span id="det-precio" style="font-size:1.6rem; font-weight:800; color:var(--gold);">$0</span>
-                </div>
-                <p id="det-desc" style="color:#ccc; line-height:1.5;">Descripción...</p>
+            <span class="close-btn-float" onclick="cerrarDetalle()">×</span>
+            
+            <img id="det-img" src="" class="modal-img-full" alt="Detalle">
+            
+            <div class="modal-body">
+                <h2 id="det-titulo" class="modal-title">Nombre</h2>
+                <span id="det-precio" class="modal-price">$0</span>
+                
+                <p id="det-desc" style="color: #bbb; line-height: 1.6; margin-bottom: 20px;">Descripción...</p>
 
-                <div class="curiosidad-box" id="box-curiosidad">
-                    <span style="font-size:1.5rem;">💡</span>
+                <div class="ia-box" id="box-curiosidad">
                     <p id="det-curiosidad">...</p>
                 </div>
 
-                <button class="btn-action" onclick="abrirOpinion()">
-                    <span>💬</span> Leer / Dejar Reseña
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:10px;">
+                    <span style="color:#777; font-size:0.9rem;">Valoración de clientes:</span>
+                    <span id="det-rating-big" style="color:var(--gold); font-size:1.2rem; font-weight:bold;">★ 0.0</span>
+                </div>
+
+                <button class="btn-big-action" onclick="abrirOpinionDesdeDetalle()">
+                    DEJAR UNA RESEÑA
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="modal-opinion" class="modal" onclick="if(event.target == this) cerrarModalOpinion()">
-        <div class="modal-content" style="padding:30px; text-align:center;">
-            <span class="close-btn" onclick="cerrarModalOpinion()">×</span>
-            <h3 style="color:var(--gold); margin-bottom:5px;">Calificar</h3>
-            <p style="color:#888; font-size:0.8rem; margin-bottom:20px;">Tu opinión nos ayuda a mejorar</p>
+    <div id="modal-opinion" class="modal" onclick="if(event.target == this) cerrarModalOpiniones()">
+        <div class="modal-content" style="padding: 30px; max-height: auto; overflow: visible;">
+            <span class="close-btn-float" style="top: 10px; right: 10px;" onclick="cerrarModalOpiniones()">×</span>
             
-            <div class="stars" id="stars-container" style="font-size:2.5rem; color:#444; cursor:pointer; margin-bottom:20px; letter-spacing:5px;">
-                <span data-val="1">☆</span><span data-val="2">☆</span><span data-val="3">☆</span><span data-val="4">☆</span><span data-val="5">☆</span>
+            <h3 style="color:var(--gold); text-align:center; font-family:'Playfair Display', serif; font-size:1.8rem; margin-bottom: 20px;">Tu Opinión</h3>
+            
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div class="stars" id="stars-container" style="font-size: 3rem; color: #333; cursor: pointer;">
+                    <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+                </div>
+                <p style="color:#666; font-size:0.8rem; margin-top:10px;">Toca las estrellas para calificar</p>
             </div>
             
-            <div class="form-group">
-                <input type="text" id="cliente-nombre" placeholder="Tu nombre (Opcional)">
-            </div>
-            <div class="form-group">
-                <textarea id="cliente-comentario" rows="3" placeholder="¿Qué tal estuvo el sabor?"></textarea>
-            </div>
+            <input type="text" id="cliente-nombre" placeholder="Tu nombre" 
+                   style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:10px; margin-bottom:15px; outline:none;">
             
-            <button class="btn-action btn-primary" id="btn-enviar-opinion" onclick="enviarOpinion()">ENVIAR RESEÑA</button>
+            <textarea id="cliente-comentario" rows="3" placeholder="¿Qué te pareció?" 
+                      style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:10px; margin-bottom:20px; outline:none;"></textarea>
+            
+            <button class="btn-big-action" onclick="enviarOpinion()">ENVIAR</button>
         </div>
     </div>
 

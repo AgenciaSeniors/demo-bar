@@ -56,40 +56,67 @@ async function cargarAdmin() {
 }
 
 // 3. IA GEMINI (ACTUALIZADA)
+// 2. GENERAR CURIOSIDAD CON IA (CORREGIDO Y ACTUALIZADO)
 async function generarCuriosidad() {
     const nombre = document.getElementById('nombre').value;
     const campo = document.getElementById('curiosidad');
     const loader = document.getElementById('loader-ia');
     const btn = document.getElementById('btn-ia');
 
-    if (!nombre) { alert("Escribe el nombre del producto primero."); return; }
+    // Validación básica
+    if (!nombre) { 
+        alert("⚠️ Por favor, escribe primero el nombre del producto."); 
+        return; 
+    }
 
-    btn.disabled = true; loader.style.display = "block"; campo.value = "";
+    // Activar estado de carga
+    btn.disabled = true; 
+    btn.textContent = "Generando...";
+    loader.style.display = "inline-block"; 
+    campo.value = "";
 
-    // Usamos la clave desde config.js
-    const API_KEY = CONFIG.GEMINI_KEY; 
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+    // TU CLAVE DE API (La que me pasaste)
+    const API_KEY = 'AIzaSyCXWHwntRNF_IcZAjPPJyARZp_uAhn8QL8'; 
+    
+    // CAMBIO IMPORTANTE: Usamos el modelo 'gemini-1.5-flash' que es más rápido y estable para esto
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-    const prompt = `Escribe un dato curioso histórico, científico o cultural breve (máximo 25 palabras) sobre: "${nombre}". Tono interesante. Sin introducciones.`;
+    const prompt = `Actúa como un experto gastronómico. Escribe una curiosidad histórica o cultural breve (máximo 25 palabras) sobre: "${nombre}". Que sea un dato real, interesante y sin introducciones.`;
 
     try {
-        const res = await fetch(URL, {
+        const response = await fetch(URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify({
+                contents: [{ 
+                    parts: [{ text: prompt }] 
+                }]
+            })
         });
-        const data = await res.json();
-        
-        if (data.candidates && data.candidates.length > 0) {
-            campo.value = data.candidates[0].content.parts[0].text;
-        } else {
-            campo.value = "No se pudo generar un dato.";
+
+        const data = await response.json();
+
+        // Verificamos si Google nos dio un error
+        if (data.error) {
+            throw new Error(data.error.message);
         }
-    } catch (e) {
-        console.error(e);
-        alert("Error IA. Verifica la consola.");
+
+        // Extraemos el texto de forma segura
+        if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+            campo.value = data.candidates[0].content.parts[0].text.trim();
+        } else {
+            campo.value = "No se encontró un dato curioso. Intenta de nuevo.";
+        }
+
+    } catch (error) {
+        console.error("Error detallado de IA:", error);
+        alert("Ocurrió un error al consultar la IA. Revisa la consola (F12) para ver el detalle.");
+        campo.value = "Error de conexión con IA.";
     } finally {
-        loader.style.display = "none"; btn.disabled = false;
+        // Restaurar estado
+        loader.style.display = "none"; 
+        btn.disabled = false;
+        btn.textContent = "✨ Generar";
     }
 }
 
