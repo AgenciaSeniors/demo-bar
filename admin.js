@@ -1,7 +1,14 @@
-// (Configuración viene de config.js)
+// --- admin.js ---
+// NOTA: Configuración ya cargada en config.js
 
 // 1. SEGURIDAD
 async function checkAuth() {
+    // Verificamos si config.js cargó bien
+    if (typeof supabaseClient === 'undefined') {
+        alert("Error crítico: config.js no cargó.");
+        return;
+    }
+
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
         window.location.href = "login.html";
@@ -15,7 +22,7 @@ async function cerrarSesion() {
     window.location.href = "login.html";
 }
 
-// 2. CARGAR ADMIN
+// 2. CARGAR INVENTARIO
 async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
     if (lista) lista.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa;">⟳ Cargando inventario...</div>';
@@ -26,7 +33,7 @@ async function cargarAdmin() {
         .eq('activo', true)
         .order('id', { ascending: false });
 
-    if (error) { alert("Error: " + error.message); return; }
+    if (error) { alert("Error cargando productos: " + error.message); return; }
     
     const html = productos.map(item => {
         const esAgotado = item.estado === 'agotado';
@@ -55,7 +62,7 @@ async function cargarAdmin() {
     if (lista) lista.innerHTML = html || '<p style="text-align:center;">Inventario vacío.</p>';
 }
 
-// 3. IA GEMINI (Versión Estable)
+// 3. IA GEMINI (USANDO MODELO ESTABLE)
 async function generarCuriosidad() {
     const nombre = document.getElementById('nombre').value;
     const campo = document.getElementById('curiosidad');
@@ -67,7 +74,7 @@ async function generarCuriosidad() {
     btn.disabled = true; loader.style.display = "inline-block"; campo.value = "";
 
     const API_KEY = CONFIG.GEMINI_KEY; 
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
     const prompt = `Escribe un dato curioso histórico o cultural breve (máximo 25 palabras) sobre: "${nombre}". Tono interesante. Sin introducciones.`;
 
     try {
@@ -113,14 +120,11 @@ if(form) {
             const archivo = fileInput.files[0];
             const nombreArchivo = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
 
-            // Subir imagen
             const { error: upErr } = await supabaseClient.storage.from('imagenes').upload(nombreArchivo, archivo);
             if (upErr) throw upErr;
 
-            // Obtener URL
             const { data: urlData } = supabaseClient.storage.from('imagenes').getPublicUrl(nombreArchivo);
 
-            // Guardar en BD
             const { error: dbErr } = await supabaseClient.from('productos').insert([{
                 nombre, precio, categoria, descripcion, curiosidad, destacado,
                 imagen_url: urlData.publicUrl, estado: 'disponible', activo: true

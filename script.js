@@ -1,4 +1,5 @@
-// (Ya no hay CONFIG aquí porque viene de config.js)
+// --- script.js ---
+// NOTA: Ya no ponemos "const CONFIG" aquí porque config.js ya lo cargó.
 
 let searchTimeout;
 let todosLosProductos = [];
@@ -7,21 +8,30 @@ let puntuacion = 0;
 
 // 1. CARGAR MENÚ
 async function cargarMenu() {
+    console.log("🚀 Iniciando carga del menú...");
     const grid = document.getElementById('menu-grid');
+    
+    // Mostramos Skeletons (cajas grises) mientras carga
     if (grid) grid.innerHTML = Array(6).fill('<div class="skeleton skeleton-card"></div>').join('');
 
     try {
-        // Cargar productos + opiniones
+        // Verificamos si Supabase está conectado
+        if (typeof supabaseClient === 'undefined') {
+            throw new Error("Supabase no está conectado. Revisa config.js");
+        }
+
+        // Cargar productos
         let { data: productos, error } = await supabaseClient
             .from('productos')
             .select(`*, opiniones(puntuacion)`)
             .eq('activo', true)
-            .order('destacado', { ascending: false })
-            .order('id', { ascending: false });
+            .order('destacado', { ascending: false });
 
         if (error) throw error;
 
-        // Calcular ratings
+        console.log("✅ Productos cargados:", productos.length);
+
+        // Procesar datos
         todosLosProductos = productos.map(prod => {
             const opiniones = prod.opiniones || [];
             const total = opiniones.length;
@@ -31,25 +41,18 @@ async function cargarMenu() {
         });
 
     } catch (err) {
-        console.warn("Fallo carga compleja, intentando modo simple...", err);
-        // Fallback: Cargar solo productos si falla el join
-        let { data: productosSimple, error: errorSimple } = await supabaseClient
-            .from('productos')
-            .select('*')
-            .eq('activo', true);
-
-        if (errorSimple) {
-            console.error("Error crítico:", errorSimple);
-            if(grid) grid.innerHTML = '<div style="text-align:center; padding:20px; color:#ff5252">Error de conexión.</div>';
-            return;
-        }
-        todosLosProductos = productosSimple.map(p => ({...p, ratingPromedio: null}));
+        console.error("❌ Error crítico:", err);
+        // Intentar carga simple por si acaso falló la relación de opiniones
+        try {
+            let { data: simple } = await supabaseClient.from('productos').select('*').eq('activo', true);
+            if (simple) todosLosProductos = simple;
+        } catch (e) { }
     }
 
     renderizarMenu(todosLosProductos);
 }
 
-// 2. RENDERIZAR
+// 2. RENDERIZAR (Modo Visible 100%)
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
     if (!contenedor) return;
@@ -57,7 +60,7 @@ function renderizarMenu(lista) {
     contenedor.innerHTML = '';
 
     if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía 🍽️</h4><p>Estamos preparando nuevos platos.</p></div>';
+        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía 🍽️</h4><p>No se encontraron productos.</p></div>';
         return;
     }
 
@@ -66,10 +69,10 @@ function renderizarMenu(lista) {
         const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
         const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
         const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : '★ Nuevo';
-        const delay = index * 0.05;
-
+        
+        // HE QUITADO "opacity: 0" para asegurar que se vean sí o sí
         return `
-            <div class="card ${claseAgotado}" style="animation: fadeUp 0.6s forwards ${delay}s; opacity: 0;" onclick="abrirDetalle(${item.id})">
+            <div class="card ${claseAgotado}" onclick="abrirDetalle(${item.id})">
                 ${badge}
                 <div class="img-box"><img src="${img}" loading="lazy" alt="${item.nombre}"></div>
                 <div class="info">
@@ -87,7 +90,7 @@ function renderizarMenu(lista) {
     contenedor.innerHTML = html;
 }
 
-// 3. DETALLE
+// 3. DETALLES Y MODALES
 function abrirDetalle(id) {
     productoActual = todosLosProductos.find(p => p.id === id);
     if (!productoActual) return;
@@ -130,7 +133,7 @@ function cerrarDetalle() {
     }
 }
 
-// 4. OPINIONES
+// Puente a opiniones
 function abrirOpinionDesdeDetalle() {
     cerrarDetalle();
     const modal = document.getElementById('modal-opinion');
@@ -150,6 +153,7 @@ function cerrarModalOpiniones() {
     }
 }
 
+// Estrellas
 const starsContainer = document.getElementById('stars-container');
 if(starsContainer) {
     starsContainer.addEventListener('click', (e) => {
@@ -190,12 +194,12 @@ async function enviarOpinion() {
         document.getElementById('cliente-comentario').value = "";
         cargarMenu(); 
     } else {
-        alert("Error: " + error.message);
+        alert("Error al enviar.");
     }
     if(btn) { btn.textContent = "ENVIAR"; btn.disabled = false; }
 }
 
-// 5. FILTROS
+// Filtros y Buscador
 function filtrar(cat, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
@@ -222,4 +226,5 @@ if(searchInput) {
     });
 }
 
+// INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', cargarMenu);
