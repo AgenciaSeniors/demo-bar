@@ -1,5 +1,4 @@
-// --- script.js ---
-// NOTA: Ya no ponemos "const CONFIG" aquí porque config.js ya lo cargó.
+// --- script.js CORREGIDO ---
 
 let searchTimeout;
 let todosLosProductos = [];
@@ -8,16 +7,13 @@ let puntuacion = 0;
 
 // 1. CARGAR MENÚ
 async function cargarMenu() {
-    console.log("🚀 Iniciando carga del menú...");
     const grid = document.getElementById('menu-grid');
-    
-    // Mostramos Skeletons (cajas grises) mientras carga
-    if (grid) grid.innerHTML = Array(6).fill('<div class="skeleton skeleton-card"></div>').join('');
+    // Loader visible
+    if (grid) grid.innerHTML = '<p style="text-align:center; color:#888; grid-column:1/-1; padding:40px;">Cargando carta...</p>';
 
     try {
-        // Verificamos si Supabase está conectado
         if (typeof supabaseClient === 'undefined') {
-            throw new Error("Supabase no está conectado. Revisa config.js");
+            throw new Error("Error: Supabase no está conectado.");
         }
 
         // Cargar productos
@@ -25,13 +21,12 @@ async function cargarMenu() {
             .from('productos')
             .select(`*, opiniones(puntuacion)`)
             .eq('activo', true)
-            .order('destacado', { ascending: false });
+            .order('destacado', { ascending: false })
+            .order('id', { ascending: false });
 
         if (error) throw error;
 
-        console.log("✅ Productos cargados:", productos.length);
-
-        // Procesar datos
+        // Calcular ratings
         todosLosProductos = productos.map(prod => {
             const opiniones = prod.opiniones || [];
             const total = opiniones.length;
@@ -41,18 +36,18 @@ async function cargarMenu() {
         });
 
     } catch (err) {
-        console.error("❌ Error crítico:", err);
-        // Intentar carga simple por si acaso falló la relación de opiniones
+        console.error("Error cargando:", err);
+        // Fallback de seguridad
         try {
             let { data: simple } = await supabaseClient.from('productos').select('*').eq('activo', true);
             if (simple) todosLosProductos = simple;
-        } catch (e) { }
+        } catch (e) {}
     }
 
     renderizarMenu(todosLosProductos);
 }
 
-// 2. RENDERIZAR (Modo Visible 100%)
+// 2. RENDERIZAR (SIN ANIMACIONES OCULTAS)
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
     if (!contenedor) return;
@@ -60,17 +55,17 @@ function renderizarMenu(lista) {
     contenedor.innerHTML = '';
 
     if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía 🍽️</h4><p>No se encontraron productos.</p></div>';
+        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía</h4><p>No hay productos disponibles.</p></div>';
         return;
     }
 
-    const html = lista.map((item, index) => {
+    const html = lista.map(item => {
         const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
         const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
         const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
-        const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : '★ Nuevo';
+        const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : 'Nuevo';
         
-        // HE QUITADO "opacity: 0" para asegurar que se vean sí o sí
+        // CORRECCIÓN: Eliminado el style="animation..." y opacity:0
         return `
             <div class="card ${claseAgotado}" onclick="abrirDetalle(${item.id})">
                 ${badge}
@@ -90,7 +85,7 @@ function renderizarMenu(lista) {
     contenedor.innerHTML = html;
 }
 
-// 3. DETALLES Y MODALES
+// 3. DETALLE
 function abrirDetalle(id) {
     productoActual = todosLosProductos.find(p => p.id === id);
     if (!productoActual) return;
@@ -102,9 +97,7 @@ function abrirDetalle(id) {
     setText('det-titulo', productoActual.nombre);
     setText('det-desc', productoActual.descripcion);
     setText('det-precio', `$${productoActual.precio}`);
-    
-    const ratingBig = productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --';
-    setText('det-rating-big', ratingBig);
+    setText('det-rating-big', productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --');
 
     if (productoActual.curiosidad && productoActual.curiosidad.length > 5) {
         if(box) box.style.display = "flex";
@@ -133,7 +126,7 @@ function cerrarDetalle() {
     }
 }
 
-// Puente a opiniones
+// 4. OPINIONES
 function abrirOpinionDesdeDetalle() {
     cerrarDetalle();
     const modal = document.getElementById('modal-opinion');
@@ -153,7 +146,6 @@ function cerrarModalOpiniones() {
     }
 }
 
-// Estrellas
 const starsContainer = document.getElementById('stars-container');
 if(starsContainer) {
     starsContainer.addEventListener('click', (e) => {
@@ -194,12 +186,12 @@ async function enviarOpinion() {
         document.getElementById('cliente-comentario').value = "";
         cargarMenu(); 
     } else {
-        alert("Error al enviar.");
+        alert("Error: " + error.message);
     }
     if(btn) { btn.textContent = "ENVIAR"; btn.disabled = false; }
 }
 
-// Filtros y Buscador
+// 5. FILTROS
 function filtrar(cat, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
@@ -226,5 +218,4 @@ if(searchInput) {
     });
 }
 
-// INICIALIZACIÓN
 document.addEventListener('DOMContentLoaded', cargarMenu);
