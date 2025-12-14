@@ -71,13 +71,123 @@ body::before {
 .price { color: var(--gold); font-weight: 700; }
 .badge-destacado { position: absolute; top: 10px; right: 10px; background: var(--gold); color: black; padding: 4px 8px; border-radius: 10px; font-size: 0.6rem; font-weight: 800; }
 
-/* --- MODALES --- */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
-.modal-content { background: #181818; width: 100%; max-width: 450px; border-radius: 25px; border: 1px solid #333; overflow: hidden; position: relative; }
-.close-btn-float { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; width: 35px; height: 35px; border-radius: 50%; text-align: center; line-height: 35px; cursor: pointer; z-index: 20; }
-.btn-big-action { width: 100%; background: var(--gold); border: none; padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; margin-top: 15px; }
-.input-stylish { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; font-size: 1rem; }
+/* --- MODALES DE LUJO (ANIMACIONES REALES) --- */
 
+/* Fondo oscuro difuminado */
+.modal { 
+    display: none; /* Se maneja con JS */
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0, 0, 0, 0.6); /* Fondo más transparente */
+    z-index: 2000; 
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity 0.4s ease; /* Transición suave del fondo */
+    
+    /* Centrado por defecto (PC) */
+    align-items: center; justify-content: center; padding: 20px;
+}
+
+/* Estado activo (Abierto) */
+.modal.active { opacity: 1; }
+
+/* Contenedor de la tarjeta */
+.modal-content { 
+    background: #181818; 
+    width: 100%; max-width: 480px; 
+    border-radius: 24px; 
+    position: relative; overflow: hidden; 
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* Estado inicial (Cerrado en PC: Pequeño y transparente) */
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); /* Efecto rebote sutil */
+}
+
+/* Estado activo del contenido (Abierto) */
+.modal.active .modal-content { 
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* Botón de cerrar flotante */
+.close-btn-float { 
+    position: absolute; top: 15px; right: 15px; 
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5); color: white; border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; cursor: pointer; z-index: 10;
+    backdrop-filter: blur(4px);
+    transition: transform 0.2s;
+}
+.close-btn-float:active { transform: scale(0.9); }
+
+/* Imagen Full Width */
+.modal-img-full { 
+    width: 100%; height: 280px; object-fit: cover; 
+    display: block;
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+/* Cuerpo del texto */
+.modal-body { 
+    padding: 0 25px 30px 25px; 
+    margin-top: -30px; /* Subimos el texto sobre la imagen */
+    position: relative; z-index: 2; 
+}
+
+.modal-title { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 2rem; color: var(--gold); 
+    margin: 0 0 5px 0; line-height: 1.1; 
+    text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.modal-price { 
+    font-size: 1.5rem; font-weight: 700; color: white; 
+    display: block; margin-bottom: 15px; 
+}
+
+/* Caja de IA y Botones */
+.ia-box { 
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    border-radius: 12px; padding: 15px; margin: 20px 0; 
+    position: relative; 
+}
+.btn-big-action { 
+    width: 100%; background: var(--gold); color: black; border: none; 
+    padding: 16px; border-radius: 14px; font-weight: 800; font-size: 1rem; 
+    cursor: pointer; margin-top: 10px; 
+    box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+    transition: transform 0.2s;
+}
+.btn-big-action:active { transform: scale(0.97); }
+
+/* --- COMPORTAMIENTO MÓVIL (BOTTOM SHEET) --- */
+@media (max-width: 768px) {
+    .modal {
+        align-items: flex-end; /* Alinear al fondo */
+        padding: 0; /* Sin padding para pegar al borde */
+    }
+
+    .modal-content {
+        max-width: 100%;
+        border-radius: 24px 24px 0 0; /* Solo redondear arriba */
+        border-bottom: none;
+        
+        /* Estado inicial móvil (Abajo fuera de pantalla) */
+        transform: translateY(100%);
+        opacity: 1; /* Opacidad siempre 1 en móvil */
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); /* Curva suave iOS */
+    }
+
+    /* Estado activo móvil (Sube a su sitio) */
+    .modal.active .modal-content {
+        transform: translateY(0);
+    }
+}
 /* =========================================
    ESTILOS EXCLUSIVOS ADMIN & LOGIN (NUEVOS)
    ========================================= */
