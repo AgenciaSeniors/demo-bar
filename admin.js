@@ -21,7 +21,7 @@ async function cerrarSesion() {
     window.location.href = "login.html";
 }
 
-// 2. CARGAR INVENTARIO
+// 2. CARGAR INVENTARIO (DISEÑO DE ICONOS)
 async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
     if (lista) lista.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa;">⟳ Cargando inventario...</div>';
@@ -32,30 +32,37 @@ async function cargarAdmin() {
         .eq('activo', true)
         .order('id', { ascending: false });
 
-    if (error) { alert("Error cargando productos: " + error.message); return; }
+    if (error) { alert("Error: " + error.message); return; }
     
     const html = productos.map(item => {
         const esAgotado = item.estado === 'agotado';
         const statusClass = esAgotado ? 'status-bad' : 'status-ok';
         const statusText = esAgotado ? 'AGOTADO' : 'ACTIVO';
-        const favColor = item.destacado ? 'var(--gold)' : '#444';
+        const favColor = item.destacado ? 'var(--gold)' : '#444'; // Estrella dorada o gris
         const img = item.imagen_url || 'https://via.placeholder.com/60';
 
         return `
             <div class="inventory-item">
                 <img src="${img}" class="item-thumb" alt="img">
+                
                 <div class="item-meta">
-                    <div class="item-title">${item.nombre} ${item.destacado ? '🌟' : ''}</div>
+                    <div class="item-title">
+                        ${item.nombre} 
+                        ${item.destacado ? '<span style="color:var(--gold); font-size:0.8rem;">★</span>' : ''}
+                    </div>
                     <div class="item-price">$${item.precio}</div>
                     <span class="item-status ${statusClass}">${statusText}</span>
                 </div>
+
                 <div class="action-btn-group">
-                    <button class="icon-btn" style="color:${favColor}; background:#222;" onclick="toggleDestacado(${item.id}, ${item.destacado})" title="Destacar">
+                    <button class="icon-btn" style="color:${favColor};" onclick="toggleDestacado(${item.id}, ${item.destacado})" title="Destacar">
                         <span class="material-icons">star</span>
                     </button>
+                    
                     <button class="icon-btn btn-edit" onclick="toggleEstado(${item.id}, '${item.estado}')" title="Cambiar Estado">
                         <span class="material-icons">power_settings_new</span>
                     </button>
+                    
                     <button class="icon-btn btn-del" onclick="eliminarProducto(${item.id})" title="Eliminar">
                         <span class="material-icons">delete</span>
                     </button>

@@ -138,14 +138,41 @@ body.admin-body {
 .status-ok { background: rgba(0,230,118,0.2); color: var(--green-success); }
 .status-bad { background: rgba(255,82,82,0.2); color: var(--red-danger); }
 
-/* Botones pequeños Admin */
-.icon-btn { 
-    width: 35px; height: 35px; border-radius: 8px; border: none; 
-    display: flex; align-items: center; justify-content: center; 
-    cursor: pointer; background: #252525; color: #fff; transition: 0.2s;
+/* --- BOTONES DE ACCIÓN (INVENTARIO) --- */
+.action-btn-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
-.icon-btn:hover { background: var(--gold); color: black; }
 
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(40, 40, 45, 0.6);
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    transform: translateY(-2px);
+    color: white;
+    border-color: var(--gold);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.icon-btn .material-icons {
+    font-size: 1.3rem; /* Tamaño del icono */
+}
+
+/* Colores específicos al pasar el mouse */
+.btn-edit:hover { background: var(--gold); color: black; border-color: var(--gold); }
+.btn-del:hover { background: rgba(255, 82, 82, 0.2); color: #ff5252; border-color: #ff5252; }
 /* Media Queries para Móvil en General */
 @media (max-width: 768px) {
     .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
