@@ -10,7 +10,7 @@ if (entrada !== CLAVE_SECRETA) {
 }
 // --- 1. CONFIGURACIÓN (MISMA QUE EN SCRIPT.JS) ---
 const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzcHd0bWZtb2x2cWx6c2J3bHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODY0NjAsImV4cCI6MjA4MTI2MjQ2MH0.7QNMreDfX1wgjPVS3mz0T3cl_seQRZPaUruhAHKxPbY';
+const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- 2. CARGAR LISTA PARA EDITAR ---
