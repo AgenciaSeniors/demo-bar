@@ -73,30 +73,70 @@ body::before {
     color: white; font-size: 1rem; outline: none; 
 }
 
-/* --- FILTROS STICKY --- */
+/* --- FILTROS DE NAVEGACIÓN PREMIUM --- */
 .filters-container { 
-    position: sticky; top: 0; z-index: 80; 
-    background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px);
-    padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: sticky; 
+    top: 0; 
+    z-index: 80; 
+    background: rgba(10, 10, 10, 0.8); /* Fondo oscuro semitransparente */
+    backdrop-filter: blur(15px);        /* Efecto vidrio borroso intenso */
+    padding: 15px 0; 
+    border-bottom: 1px solid rgba(255, 215, 55, 0.1); /* Línea dorada muy sutil */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Sombra para dar altura */
 }
+
 .filters { 
-    display: flex; gap: 12px; padding: 0 20px; overflow-x: auto; 
-    scrollbar-width: none; 
+    display: flex; 
+    gap: 12px; 
+    padding: 0 20px; 
+    overflow-x: auto; 
+    scroll-behavior: smooth;
+    /* Ocultar barra de scroll pero permitir deslizar */
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
 }
 .filters::-webkit-scrollbar { display: none; }
 
+/* ESTILO DEL BOTÓN BASE */
 .filter-btn { 
-    background: var(--bg-surface); color: var(--text-secondary); 
-    border: 1px solid rgba(255,255,255,0.1); 
-    padding: 10px 20px; border-radius: 12px; 
-    font-size: 0.85rem; font-weight: 600; white-space: nowrap; 
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-.filter-btn.active { 
-    background: var(--gold); color: black; border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); transform: scale(1.05);
+    background: rgba(30, 30, 35, 0.6); 
+    color: #a0a0a0; 
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    padding: 10px 24px; 
+    border-radius: 50px; /* Redondeado completo (Pill shape) */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    white-space: nowrap; 
+    cursor: pointer; 
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Animación "rebote" suave */
+    position: relative;
+    overflow: hidden;
 }
 
+/* EFECTO HOVER (AL PASAR EL MOUSE) */
+.filter-btn:hover {
+    background: rgba(255, 255, 255, 0.1); 
+    color: white;
+    border-color: var(--gold);
+    transform: translateY(-3px); /* Se eleva físicamente */
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2); /* Sombra dorada debajo */
+}
+
+/* EFECTO ACTIVO (SELECCIONADO) */
+.filter-btn.active { 
+    background: linear-gradient(135deg, #FFD700, #DAA520); /* Degradado Dorado */
+    color: #000; /* Texto negro para contraste */
+    font-weight: 800;
+    border-color: transparent;
+    transform: scale(1.05); /* Crece un poco */
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); /* Resplandor intenso (Glow) */
+}
+
+/* EFECTO CLICK (AL PRESIONAR) */
+.filter-btn:active {
+    transform: scale(0.95); /* Se encoge al pulsar */
+}
 /* --- GRID DE PRODUCTOS --- */
 .container { padding: 25px 20px; }
 .section-title { font-family: 'Playfair Display', serif; color: white; margin-bottom: 15px; font-size: 1.5rem; }
