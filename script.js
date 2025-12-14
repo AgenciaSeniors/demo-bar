@@ -1,32 +1,17 @@
+// (Ya no hay CONFIG aquí porque viene de config.js)
 
 let searchTimeout;
 let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-// --- SISTEMA TOAST ---
-function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if(!container) return; // Protección si no existe
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    let icon = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
-    toast.innerHTML = `<span>${icon}</span> <span style="font-size:0.9rem">${message}</span>`;
-    container.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(20px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
-}
-
-// 1. CARGAR MENÚ (BLINDADO)
+// 1. CARGAR MENÚ
 async function cargarMenu() {
     const grid = document.getElementById('menu-grid');
-    grid.innerHTML = Array(6).fill('<div class="skeleton skeleton-card"></div>').join('');
+    if (grid) grid.innerHTML = Array(6).fill('<div class="skeleton skeleton-card"></div>').join('');
 
     try {
-        // Intento 1: Cargar Productos + Opiniones
+        // Cargar productos + opiniones
         let { data: productos, error } = await supabaseClient
             .from('productos')
             .select(`*, opiniones(puntuacion)`)
@@ -36,9 +21,8 @@ async function cargarMenu() {
 
         if (error) throw error;
 
-        // Si funciona, calculamos ratings
+        // Calcular ratings
         todosLosProductos = productos.map(prod => {
-            // Protección por si opiniones viene null
             const opiniones = prod.opiniones || [];
             const total = opiniones.length;
             const suma = opiniones.reduce((acc, curr) => acc + curr.puntuacion, 0);
@@ -48,20 +32,17 @@ async function cargarMenu() {
 
     } catch (err) {
         console.warn("Fallo carga compleja, intentando modo simple...", err);
-        
-        // Intento 2: Cargar SOLO productos (Respaldo de seguridad)
+        // Fallback: Cargar solo productos si falla el join
         let { data: productosSimple, error: errorSimple } = await supabaseClient
             .from('productos')
             .select('*')
-            .eq('activo', true)
-            .order('destacado', { ascending: false });
+            .eq('activo', true);
 
         if (errorSimple) {
             console.error("Error crítico:", errorSimple);
-            grid.innerHTML = '<div style="text-align:center; padding:20px; color:#ff5252">Error de conexión. Por favor recarga.</div>';
+            if(grid) grid.innerHTML = '<div style="text-align:center; padding:20px; color:#ff5252">Error de conexión.</div>';
             return;
         }
-
         todosLosProductos = productosSimple.map(p => ({...p, ratingPromedio: null}));
     }
 
@@ -71,6 +52,8 @@ async function cargarMenu() {
 // 2. RENDERIZAR
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
+    if (!contenedor) return;
+    
     contenedor.innerHTML = '';
 
     if (!lista || lista.length === 0) {
@@ -78,23 +61,20 @@ function renderizarMenu(lista) {
         return;
     }
 
-    let html = '';
-    lista.forEach((item, index) => {
+    const html = lista.map((item, index) => {
         const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
         const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
         const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
         const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : '★ Nuevo';
-        
-        // Animación progresiva
         const delay = index * 0.05;
 
-        html += `
+        return `
             <div class="card ${claseAgotado}" style="animation: fadeUp 0.6s forwards ${delay}s; opacity: 0;" onclick="abrirDetalle(${item.id})">
                 ${badge}
                 <div class="img-box"><img src="${img}" loading="lazy" alt="${item.nombre}"></div>
                 <div class="info">
                     <h3>${item.nombre}</h3>
-                    <p class="short-desc">${item.descripcion || 'Sin descripción'}</p>
+                    <p class="short-desc">${item.descripcion || ''}</p>
                     <div class="card-footer">
                          <span class="price">$${item.precio}</span>
                          <span class="rating-pill">${rating}</span>
@@ -102,7 +82,8 @@ function renderizarMenu(lista) {
                 </div>
             </div>
         `;
-    });
+    }).join('');
+
     contenedor.innerHTML = html;
 }
 
@@ -115,21 +96,18 @@ function abrirDetalle(id) {
     const box = document.getElementById('box-curiosidad');
     
     if(imgEl) imgEl.src = productoActual.imagen_url || '';
-    
     setText('det-titulo', productoActual.nombre);
     setText('det-desc', productoActual.descripcion);
     setText('det-precio', `$${productoActual.precio}`);
     
-    // Rating grande
     const ratingBig = productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --';
     setText('det-rating-big', ratingBig);
 
-    // Curiosidad
     if (productoActual.curiosidad && productoActual.curiosidad.length > 5) {
-        box.style.display = "flex";
+        if(box) box.style.display = "flex";
         setText('det-curiosidad', productoActual.curiosidad);
     } else {
-        box.style.display = "none";
+        if(box) box.style.display = "none";
     }
     
     const modal = document.getElementById('modal-detalle');
@@ -139,7 +117,6 @@ function abrirDetalle(id) {
     }
 }
 
-// Helper seguro para texto
 function setText(id, text) {
     const el = document.getElementById(id);
     if(el) el.textContent = text;
@@ -173,15 +150,12 @@ function cerrarModalOpiniones() {
     }
 }
 
-// Estrellas
 const starsContainer = document.getElementById('stars-container');
 if(starsContainer) {
     starsContainer.addEventListener('click', (e) => {
         if (e.target.tagName === 'SPAN') {
             puntuacion = parseInt(e.target.dataset.val);
             actualizarEstrellas();
-            e.target.style.transform = "scale(1.3)";
-            setTimeout(()=>e.target.style.transform = "scale(1)", 200);
         }
     });
 }
@@ -195,11 +169,11 @@ function actualizarEstrellas() {
 }
 
 async function enviarOpinion() {
-    if (puntuacion === 0) { showToast("¡Toca las estrellas para calificar!", "error"); return; }
+    if (puntuacion === 0) { alert("¡Puntúa con estrellas!"); return; }
     
     const nombre = document.getElementById('cliente-nombre').value || "Anónimo";
     const comentario = document.getElementById('cliente-comentario').value;
-    const btn = document.querySelector('#modal-opinion .btn-big-action'); // Corrección de selector
+    const btn = document.querySelector('#modal-opinion .btn-big-action');
 
     if(btn) { btn.textContent = "Enviando..."; btn.disabled = true; }
 
@@ -211,25 +185,21 @@ async function enviarOpinion() {
     }]);
 
     if (!error) {
-        showToast("¡Gracias por tu opinión!", "success");
+        alert("¡Gracias!");
         cerrarModalOpiniones();
-        // Limpiar campos
         document.getElementById('cliente-comentario').value = "";
         cargarMenu(); 
     } else {
-        showToast("Error al enviar.", "error");
+        alert("Error: " + error.message);
     }
     if(btn) { btn.textContent = "ENVIAR"; btn.disabled = false; }
 }
 
-// 5. FILTROS & BUSCADOR
+// 5. FILTROS
 function filtrar(cat, btn) {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
     
-    // Scroll suave
-    if(btn) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-
     const searchInput = document.getElementById('search-input');
     if(searchInput) searchInput.value = '';
     
