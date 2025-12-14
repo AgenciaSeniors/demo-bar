@@ -79,18 +79,19 @@ body::before {
     background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(12px);
     padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.filters:hover { 
+.filters { 
     display: flex; gap: 12px; padding: 0 20px; overflow-x: auto; 
     scrollbar-width: none; 
 }
 .filters::-webkit-scrollbar { display: none; }
 
-.filter-btn { 
-    background: var(--bg-surface); color: var(--text-secondary); 
-    border: 1px solid rgba(255,255,255,0.1); 
-    padding: 10px 20px; border-radius: 12px; 
-    font-size: 0.85rem; font-weight: 600; white-space: nowrap; 
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+.filter-btn:hover {
+    background: rgba(255, 255, 255, 0.1); /* Fondo un poco más claro */
+    border-color: var(--gold);             /* Borde dorado */
+    color: white;                          /* Texto blanco brillante */
+    transform: translateY(-3px);           /* Se eleva un poco */
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2); /* Sombra dorada suave */
+    cursor: pointer;
 }
 .filter-btn.active { 
     background: var(--gold); color: black; border-color: var(--gold);
