@@ -9,8 +9,8 @@ if (entrada !== CLAVE_SECRETA) {
     window.location.href = "index.html"; // Lo devolvemos al menú público
 }
 // --- 1. CONFIGURACIÓN (MISMA QUE EN SCRIPT.JS) ---
-const SUPABASE_URL = 'TU_URL_DE_SUPABASE';
-const SUPABASE_KEY = 'TU_KEY_ANONIMA';
+const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzcHd0bWZtb2x2cWx6c2J3bHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODY0NjAsImV4cCI6MjA4MTI2MjQ2MH0.7QNMreDfX1wgjPVS3mz0T3cl_seQRZPaUruhAHKxPbY';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- 2. CARGAR LISTA PARA EDITAR ---
