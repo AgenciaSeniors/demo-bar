@@ -1,62 +1,51 @@
-// CONFIGURACIÓN
-const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU'; // Tu clave correcta
+// --- CONFIGURACIÓN ---
+const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co'; // <--- TU URL
+const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU'; // <--- TU KEY PÚBLICA (sb_publishable)
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let todosLosProductos = [];
-let productoSeleccionadoId = null;
-let puntuacionActual = 0;
+let productoActual = null;
+let puntuacion = 0;
 
 // 1. CARGAR MENÚ
 async function cargarMenu() {
     let { data: productos, error } = await supabaseClient
         .from('productos')
         .select('*')
-        .eq('activo', true) 
-        .order('destacado', { ascending: false }) // Los destacados primero
+        .eq('activo', true)
+        .order('destacado', { ascending: false })
         .order('id', { ascending: false });
 
     if (error) { console.error(error); return; }
-    
     todosLosProductos = productos;
     renderizarMenu(todosLosProductos);
 }
 
-// 2. RENDERIZAR (Con etiquetas y botones)
+// 2. RENDERIZAR
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
     contenedor.innerHTML = '';
 
     if (lista.length === 0) {
-        contenedor.innerHTML = '<p style="text-align:center; width:100%; margin-top:20px;">No encontramos coincidencias 😢</p>';
+        contenedor.innerHTML = '<p style="text-align:center; width:100%">No hay resultados 😢</p>';
         return;
     }
 
     lista.forEach(item => {
         const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
-        const imagenFinal = item.imagen_url || 'https://via.placeholder.com/150';
-        
-        // Etiqueta de Destacado
-        let badgeHtml = '';
-        if (item.destacado) {
-            badgeHtml = `<span class="badge-destacado">★ RECOMENDADO</span>`;
-        }
+        const img = item.imagen_url || 'https://via.placeholder.com/300';
+        const badge = item.destacado ? `<span class="badge-destacado">★ TOP</span>` : '';
 
         const html = `
-            <div class="card ${claseAgotado}">
-                ${badgeHtml}
-                <div class="img-box">
-                    <img src="${imagenFinal}" alt="${item.nombre}" loading="lazy">
-                </div>
+            <div class="card ${claseAgotado}" onclick="abrirDetalle(${item.id})">
+                ${badge}
+                <div class="img-box"><img src="${img}" loading="lazy"></div>
                 <div class="info">
-                    <div class="row">
-                        <h3>${item.nombre}</h3>
-                        <span class="price">$${item.precio}</span>
+                    <h3>${item.nombre}</h3>
+                    <div style="display:flex; justify-content:space-between;">
+                         <span class="price">$${item.precio}</span>
+                         <small style="color:#777">👆 Ver más</small>
                     </div>
-                    <p class="short-desc">${item.descripcion || ''}</p>
-                    <button class="btn-opinar" onclick="abrirModal(${item.id}, '${item.nombre}')">
-                        💬 Opinar sobre este plato
-                    </button>
                 </div>
             </div>
         `;
@@ -64,85 +53,72 @@ function renderizarMenu(lista) {
     });
 }
 
-// 3. BUSCADOR INSTANTÁNEO
-document.getElementById('search-input').addEventListener('input', (e) => {
-    const termino = e.target.value.toLowerCase();
-    const filtrados = todosLosProductos.filter(prod => 
-        prod.nombre.toLowerCase().includes(termino) || 
-        (prod.descripcion && prod.descripcion.toLowerCase().includes(termino))
-    );
-    renderizarMenu(filtrados);
-});
+// 3. DETALLE & CURIOSIDAD
+function abrirDetalle(id) {
+    productoActual = todosLosProductos.find(p => p.id === id);
+    if (!productoActual) return;
 
-// 4. FILTROS CATEGORÍA
-function filtrar(categoria, boton) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    boton.classList.add('active');
+    document.getElementById('det-img').src = productoActual.imagen_url;
+    document.getElementById('det-titulo').textContent = productoActual.nombre;
+    document.getElementById('det-desc').textContent = productoActual.descripcion;
+    document.getElementById('det-precio').textContent = `$${productoActual.precio}`;
+    document.getElementById('det-curiosidad').textContent = productoActual.curiosidad || "¡Delicioso y preparado al momento!";
     
-    // Limpiamos buscador al cambiar filtro
-    document.getElementById('search-input').value = '';
-
-    if (categoria === 'todos') {
-        renderizarMenu(todosLosProductos);
-    } else {
-        renderizarMenu(todosLosProductos.filter(p => p.categoria === categoria));
-    }
+    document.getElementById('modal-detalle').style.display = 'flex';
 }
+function cerrarDetalle() { document.getElementById('modal-detalle').style.display = 'none'; }
 
-// 5. LÓGICA DE OPINIONES
-function abrirModal(id, nombre) {
-    productoSeleccionadoId = id;
-    document.getElementById('modal-prod-name').textContent = nombre;
+// 4. OPINIONES
+function abrirOpinionDesdeDetalle() {
+    cerrarDetalle();
     document.getElementById('modal-opinion').style.display = 'flex';
-    puntuacionActual = 0;
+    puntuacion = 0;
     actualizarEstrellas();
 }
+function cerrarModalOpiniones() { document.getElementById('modal-opinion').style.display = 'none'; }
 
-function cerrarModal() {
-    document.getElementById('modal-opinion').style.display = 'none';
-}
-
-// Manejo de estrellas
-document.querySelectorAll('.stars span').forEach(star => {
-    star.addEventListener('click', () => {
-        puntuacionActual = parseInt(star.dataset.val);
+document.querySelectorAll('.stars span').forEach(s => {
+    s.addEventListener('click', () => {
+        puntuacion = parseInt(s.dataset.val);
         actualizarEstrellas();
     });
 });
-
 function actualizarEstrellas() {
     document.querySelectorAll('.stars span').forEach(s => {
-        s.classList.toggle('active', parseInt(s.dataset.val) <= puntuacionActual);
+        s.classList.toggle('active', parseInt(s.dataset.val) <= puntuacion);
     });
 }
 
 async function enviarOpinion() {
-    if (puntuacionActual === 0) { alert("¡Por favor toca las estrellas para puntuar!"); return; }
-    
+    if (puntuacion === 0) { alert("¡Puntúa con estrellas!"); return; }
     const nombre = document.getElementById('cliente-nombre').value || "Anónimo";
     const comentario = document.getElementById('cliente-comentario').value;
-    const btn = document.querySelector('.btn-submit');
-    
-    btn.textContent = "Enviando...";
-    btn.disabled = true;
 
     const { error } = await supabaseClient.from('opiniones').insert([{
-        producto_id: productoSeleccionadoId,
+        producto_id: productoActual.id,
         cliente_nombre: nombre,
         comentario: comentario,
-        puntuacion: puntuacionActual
+        puntuacion: puntuacion
     }]);
 
-    if (!error) {
-        alert("¡Gracias por tu opinión!");
-        cerrarModal();
-        document.getElementById('cliente-nombre').value = '';
-        document.getElementById('cliente-comentario').value = '';
-    } else {
-        alert("Error al enviar. Intenta de nuevo.");
-    }
-    btn.textContent = "Enviar";
-    btn.disabled = false;
+    if (!error) { alert("¡Gracias!"); cerrarModalOpiniones(); }
+    else { alert("Error al enviar"); }
 }
+
+// 5. FILTROS & BUSCADOR
+function filtrar(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('search-input').value = '';
+    
+    const lista = cat === 'todos' ? todosLosProductos : todosLosProductos.filter(p => p.categoria === cat);
+    renderizarMenu(lista);
+}
+
+document.getElementById('search-input').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const lista = todosLosProductos.filter(p => p.nombre.toLowerCase().includes(term));
+    renderizarMenu(lista);
+});
 
 document.addEventListener('DOMContentLoaded', cargarMenu);

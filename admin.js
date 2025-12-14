@@ -1,17 +1,15 @@
-// --- SEGURIDAD ---
 const CLAVE_SECRETA = "1234"; 
-const entrada = prompt("🔒 Área restringida. Ingresa la contraseña de Administrador:");
-if (entrada !== CLAVE_SECRETA) { alert("⛔ Contraseña incorrecta."); window.location.href = "index.html"; }
+if (prompt("🔒 Clave:") !== CLAVE_SECRETA) { window.location.href = "index.html"; }
 
-// --- CONFIG ---
-const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU';
+// CONFIGURACIÓN SUPABASE
+const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU'; 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// --- CARGAR LISTA ---
+// 1. CARGAR LISTA
 async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
-    lista.innerHTML = 'Actualizando...';
+    lista.innerHTML = 'Cargando...';
 
     let { data: productos, error } = await supabaseClient
         .from('productos')
@@ -19,18 +17,14 @@ async function cargarAdmin() {
         .eq('activo', true)
         .order('id', { ascending: false });
 
-    if (error) { alert('Error: ' + error.message); return; }
-
+    if (error) { alert("Error al cargar"); return; }
     lista.innerHTML = '';
+
     productos.forEach(item => {
         const esAgotado = item.estado === 'agotado';
-        const estadoBadge = esAgotado 
-            ? '<span class="status-text status-agotado">AGOTADO</span>' 
-            : '<span class="status-text status-disponible">DISPONIBLE</span>';
+        const badge = esAgotado ? '<span class="status-agotado">AGOTADO</span>' : '<span class="status-disponible">OK</span>';
+        const favClass = item.destacado ? 'is-fav' : '';
         
-        const btnTexto = esAgotado ? 'Activar' : 'Agotar';
-        const claseFav = item.destacado ? 'is-fav' : ''; // Para el color dorado
-
         const div = document.createElement('div');
         div.className = 'admin-item';
         div.innerHTML = `
@@ -38,13 +32,12 @@ async function cargarAdmin() {
                 <img src="${item.imagen_url}" alt="img">
                 <div class="item-details">
                     <strong>${item.nombre}</strong> ($${item.precio})
-                    ${estadoBadge}
-                    ${item.destacado ? '🌟' : ''}
+                    ${badge} ${item.destacado ? '🌟' : ''}
                 </div>
             </div>
             <div class="item-actions">
-                <button class="btn-sm btn-star ${claseFav}" onclick="toggleDestacado(${item.id}, ${item.destacado})">★</button>
-                <button class="btn-sm btn-toggle" onclick="toggleEstado(${item.id}, '${item.estado}')">${btnTexto}</button>
+                <button class="btn-sm btn-star ${favClass}" onclick="toggleDestacado(${item.id}, ${item.destacado})">★</button>
+                <button class="btn-sm btn-toggle" onclick="toggleEstado(${item.id}, '${item.estado}')">I/O</button>
                 <button class="btn-sm btn-delete" onclick="eliminarProducto(${item.id})">X</button>
             </div>
         `;
@@ -52,62 +45,98 @@ async function cargarAdmin() {
     });
 }
 
-// --- CREAR PRODUCTO ---
+// 2. GENERAR CURIOSIDAD CON IA (GOOGLE GEMINI)
+async function generarCuriosidad() {
+    const nombre = document.getElementById('nombre').value;
+    const campo = document.getElementById('curiosidad');
+    const loader = document.getElementById('loader-ia');
+    const btn = document.getElementById('btn-ia');
+
+    if (!nombre) { alert("Escribe primero el nombre del producto."); return; }
+
+    btn.disabled = true; loader.style.display = "block"; campo.value = "";
+
+    // --- ¡PEGA TU CLAVE DE GOOGLE AQUÍ ABAJO! ---
+    const API_KEY = 'AIzaSyBNjg0xD2OVdBZ6EOe3bhSic73ilMrfGQI'; 
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+
+    const prompt = `Escribe un dato curioso histórico o cultural muy breve (máximo 20 palabras) sobre la comida o bebida: "${nombre}". No uses introducciones, ve directo al dato.`;
+
+    try {
+        const res = await fetch(URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await res.json();
+        campo.value = data.candidates[0].content.parts[0].text;
+    } catch (e) {
+        console.error(e);
+        alert("Error con la IA. Revisa tu API Key.");
+    } finally {
+        loader.style.display = "none"; btn.disabled = false;
+    }
+}
+
+// 3. GUARDAR PRODUCTO
 document.getElementById('form-producto').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.textContent = "Guardando..."; btn.disabled = true;
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = "Subiendo..."; btn.disabled = true;
 
     try {
         const nombre = document.getElementById('nombre').value;
         const precio = document.getElementById('precio').value;
         const categoria = document.getElementById('categoria').value;
         const desc = document.getElementById('descripcion').value;
-        const destacado = document.getElementById('destacado').checked; // Valor del checkbox
+        const curiosidad = document.getElementById('curiosidad').value;
+        const destacado = document.getElementById('destacado').checked;
         const fileInput = document.getElementById('imagen-file');
 
-        if (fileInput.files.length === 0) throw new Error("Falta imagen");
+        if (fileInput.files.length === 0) throw new Error("Falta la imagen");
         const archivo = fileInput.files[0];
         const nombreArchivo = Date.now() + '_' + archivo.name.replace(/\s/g, '');
 
+        // Subir Imagen
         const { error: upErr } = await supabaseClient.storage.from('imagenes').upload(nombreArchivo, archivo);
         if (upErr) throw upErr;
 
         const { data: urlData } = supabaseClient.storage.from('imagenes').getPublicUrl(nombreArchivo);
 
+        // Guardar Datos
         const { error: dbErr } = await supabaseClient.from('productos').insert([{
-            nombre: nombre, precio: precio, categoria: categoria,
-            imagen_url: urlData.publicUrl, descripcion: desc, 
-            estado: 'disponible', activo: true,
-            destacado: destacado // Guardamos si es favorito
+            nombre, precio, categoria, descripcion, curiosidad, destacado,
+            imagen_url: urlData.publicUrl, estado: 'disponible', activo: true
         }]);
 
         if (dbErr) throw dbErr;
-
-        alert("¡Guardado!");
+        
+        alert("¡Producto Guardado!");
         document.getElementById('form-producto').reset();
         cargarAdmin();
 
-    } catch (err) { alert("Error: " + err.message); } 
-    finally { btn.textContent = "GUARDAR EN EL MENÚ"; btn.disabled = false; }
+    } catch (error) {
+        alert("Error: " + error.message);
+    } finally {
+        btn.textContent = "GUARDAR"; btn.disabled = false;
+    }
 });
 
-// --- ACCIONES ---
-async function toggleDestacado(id, valorActual) {
-    await supabaseClient.from('productos').update({ destacado: !valorActual }).eq('id', id);
+// 4. ACCIONES RAPIDAS
+async function toggleDestacado(id, val) {
+    await supabaseClient.from('productos').update({ destacado: !val }).eq('id', id);
     cargarAdmin();
 }
-
-async function toggleEstado(id, estadoActual) {
-    const nuevo = estadoActual === 'disponible' ? 'agotado' : 'disponible';
+async function toggleEstado(id, estado) {
+    const nuevo = estado === 'disponible' ? 'agotado' : 'disponible';
     await supabaseClient.from('productos').update({ estado: nuevo }).eq('id', id);
     cargarAdmin();
 }
-
 async function eliminarProducto(id) {
-    if(!confirm("¿Eliminar?")) return;
-    await supabaseClient.from('productos').update({ activo: false }).eq('id', id);
-    cargarAdmin();
+    if(confirm("¿Eliminar?")) {
+        await supabaseClient.from('productos').update({ activo: false }).eq('id', id);
+        cargarAdmin();
+    }
 }
 
 cargarAdmin();
