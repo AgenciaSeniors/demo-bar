@@ -10,15 +10,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 </head>
-<body class="admin-body">
-
-    <header class="admin-header">
-        <div style="display:flex; align-items:center; gap:10px;">
+<body class="admin-body"> <header class="admin-header">
+        <div style="display:flex; align-items:center;">
             <h1 class="admin-title">Panel Gerencial</h1>
             <span class="admin-badge">ADMIN</span>
         </div>
         <div style="display:flex; gap:15px; align-items:center;">
-            <a href="index.html" style="color:#aaa; text-decoration:none; font-size:0.8rem;"><span class="material-icons" style="vertical-align:middle; font-size:1.2rem;">visibility</span> Ver Carta</a>
+            <a href="index.html" style="color:#aaa; text-decoration:none; font-size:0.8rem;">Ver Carta</a>
             <button onclick="cerrarSesion()" style="background:none; border:none; color:#ff5252; cursor:pointer;"><span class="material-icons">logout</span></button>
         </div>
     </header>
@@ -26,11 +24,11 @@
     <div class="dashboard-grid">
         
         <div class="upload-zone">
-            <h3 style="color:white; margin-bottom:25px; border-bottom:1px solid #333; padding-bottom:10px;">Nuevo Producto</h3>
+            <h3 style="color:white; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">Nuevo Producto</h3>
             
             <form id="form-producto">
                 <div class="input-group">
-                    <label>Nombre del Plato/Bebida</label>
+                    <label>Nombre</label>
                     <input type="text" id="nombre" class="input-stylish" required>
                 </div>
 
@@ -41,7 +39,7 @@
                     </div>
                     <div class="input-group">
                         <label>Categoría</label>
-                        <select id="categoria" class="input-stylish" style="appearance:none;">
+                        <select id="categoria" class="input-stylish">
                             <option value="cocteles">Cocteles</option>
                             <option value="cervezas">Cervezas</option>
                             <option value="licores">Vinos/Licor</option>
@@ -53,13 +51,9 @@
                     </div>
                 </div>
 
-                <div style="margin-bottom:20px;">
-                    <label style="color:#888; font-size:0.8rem; margin-bottom:5px; display:block;">Fotografía</label>
-                    <div class="file-upload-wrapper" onclick="document.getElementById('imagen-file').click()">
-                        <span class="material-icons file-upload-icon">add_a_photo</span>
-                        <span class="file-upload-text">Toca para seleccionar imagen</span>
-                        <input type="file" id="imagen-file" accept="image/*" required>
-                    </div>
+                <div class="input-group">
+                    <label>Imagen</label>
+                    <input type="file" id="imagen-file" accept="image/*" class="input-stylish" required>
                 </div>
 
                 <div class="input-group">
@@ -72,24 +66,23 @@
                         <span style="color:var(--gold); font-size:0.8rem; font-weight:bold;">✨ Dato Curioso (IA)</span>
                         <button type="button" id="btn-ia" onclick="generarCuriosidad()" style="background:var(--gold); border:none; padding:5px 12px; border-radius:20px; font-weight:bold; cursor:pointer; font-size:0.7rem;">Generar</button>
                     </div>
-                    <span id="loader-ia" style="display:none; color:#888; font-size:0.7rem;">Conectando con Google AI...</span>
-                    <textarea id="curiosidad" class="input-stylish" rows="3" style="font-size:0.85rem; background:#1a1a20;" placeholder="Se generará automáticamente..."></textarea>
+                    <span id="loader-ia" style="display:none; color:#888; font-size:0.7rem;">Conectando...</span>
+                    <textarea id="curiosidad" class="input-stylish" rows="2" style="font-size:0.85rem;" placeholder="Automático..."></textarea>
                 </div>
 
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                     <input type="checkbox" id="destacado" style="width:18px; height:18px; accent-color:var(--gold);">
-                    <label for="destacado" style="margin:0; position:static; cursor:pointer; color:#ccc;">Marcar como "Recomendado" 🌟</label>
+                    <label for="destacado" style="margin:0; cursor:pointer; color:#ccc;">Marcar como "Destacado" 🌟</label>
                 </div>
 
-                <button type="submit" class="btn-big-action">GUARDAR EN EL MENÚ</button>
+                <button type="submit" class="btn-big-action">GUARDAR</button>
             </form>
         </div>
 
         <div class="inventory-zone">
             <h3 style="color:white; margin-bottom:20px;">Inventario Activo</h3>
-            <div id="lista-admin" class="inventory-list">
-                <p style="text-align:center; color:#666;">Cargando productos...</p>
-            </div>
+            <div id="lista-admin">
+                </div>
         </div>
 
     </div>
