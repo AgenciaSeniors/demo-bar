@@ -81,16 +81,19 @@
     </div>
 
     <div id="modal-opinion" class="modal" onclick="if(event.target == this) cerrarModalOpiniones()">
-        <div class="modal-content" style="padding:30px; text-align:center;">
+        <div class="modal-content" style="padding: 30px; text-align: center;">
             <span class="close-btn-float" style="top:10px; right:10px;" onclick="cerrarModalOpiniones()">×</span>
-            <h3 style="color:var(--gold); margin-bottom:20px; font-size:1.5rem;">Calificar</h3>
+            
+            <h3 style="color:var(--gold); margin-bottom:20px; font-family:'Playfair Display', serif;">
+                Calificar Experiencia
+            </h3>
             
             <div class="stars" id="stars-container" style="font-size:3rem; color:#444; cursor:pointer; margin-bottom:20px;">
                 <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
             </div>
             
-            <input type="text" id="cliente-nombre" placeholder="Tu nombre (Opcional)" class="input-stylish" style="width:100%; padding:15px; margin-bottom:10px; background:#222; border:1px solid #444; border-radius:10px; color:white;">
-            <textarea id="cliente-comentario" rows="3" placeholder="¿Qué te pareció?" class="input-stylish" style="width:100%; padding:15px; margin-bottom:15px; background:#222; border:1px solid #444; border-radius:10px; color:white;"></textarea>
+            <input type="text" id="cliente-nombre" placeholder="Tu nombre (Opcional)" class="input-stylish" style="width:100%; margin-bottom:10px;">
+            <textarea id="cliente-comentario" rows="3" placeholder="¿Qué te pareció?" class="input-stylish" style="width:100%; margin-bottom:20px;"></textarea>
             
             <button class="btn-big-action" id="btn-enviar-opinion" onclick="enviarOpinion()">ENVIAR</button>
         </div>

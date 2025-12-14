@@ -90,6 +90,7 @@ function abrirDetalle(id) {
     productoActual = todosLosProductos.find(p => p.id === id);
     if (!productoActual) return;
 
+    // Llenar datos
     const imgEl = document.getElementById('det-img');
     const box = document.getElementById('box-curiosidad');
     
@@ -97,19 +98,26 @@ function abrirDetalle(id) {
     setText('det-titulo', productoActual.nombre);
     setText('det-desc', productoActual.descripcion);
     setText('det-precio', `$${productoActual.precio}`);
-    setText('det-rating-big', productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --');
+    
+    const ratingBig = productoActual.ratingPromedio ? `★ ${productoActual.ratingPromedio}` : '★ --';
+    setText('det-rating-big', ratingBig);
 
+    // Manejo de curiosidad
     if (productoActual.curiosidad && productoActual.curiosidad.length > 5) {
-        if(box) box.style.display = "flex";
+        if(box) box.style.display = "block";
         setText('det-curiosidad', productoActual.curiosidad);
     } else {
         if(box) box.style.display = "none";
     }
     
+    // ANIMACIÓN DE ENTRADA
     const modal = document.getElementById('modal-detalle');
     if(modal) {
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('active'), 10);
+        modal.style.display = 'flex'; // 1. Hacer visible el contenedor
+        // Pequeño delay para permitir que el navegador procese el display:flex antes de animar
+        setTimeout(() => {
+            modal.classList.add('active'); // 2. Activar animación CSS
+        }, 10);
     }
 }
 
@@ -121,28 +129,41 @@ function setText(id, text) {
 function cerrarDetalle() {
     const modal = document.getElementById('modal-detalle');
     if(modal) {
-        modal.classList.remove('active');
-        setTimeout(() => modal.style.display = 'none', 300);
+        modal.classList.remove('active'); // 1. Iniciar animación de salida
+        
+        // 2. Esperar a que termine la animación (350ms) antes de ocultar
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 350);
     }
 }
 
 // 4. OPINIONES
 function abrirOpinionDesdeDetalle() {
-    cerrarDetalle();
-    const modal = document.getElementById('modal-opinion');
-    if(modal) {
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('active'), 10);
+    const modalDetalle = document.getElementById('modal-detalle');
+    const modalOpinion = document.getElementById('modal-opinion');
+    
+    // Cierra detalle
+    modalDetalle.classList.remove('active');
+    setTimeout(() => {
+        modalDetalle.style.display = 'none';
+        
+        // Abre opinión inmediatamente después
+        modalOpinion.style.display = 'flex';
+        setTimeout(() => modalOpinion.classList.add('active'), 10);
+        
         puntuacion = 0;
         actualizarEstrellas();
-    }
+    }, 300); // Espera un poco menos para que se sienta fluido
 }
 
 function cerrarModalOpiniones() {
     const modal = document.getElementById('modal-opinion');
     if(modal) {
         modal.classList.remove('active');
-        setTimeout(() => modal.style.display = 'none', 300);
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 350);
     }
 }
 
