@@ -41,14 +41,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Imagen (Selecciona desde tu dispositivo)</label>
-                    <input type="file" id="imagen-file" accept="image/*" required 
-                           style="background: #333; padding: 10px; width: 100%; color: white;">
+                    <label>Imagen</label>
+                    <input type="file" id="imagen-file" accept="image/*" required style="background: #333; padding: 10px; width: 100%; color: white;">
                 </div>
 
                 <div class="form-group">
                     <label>Descripción Corta</label>
                     <textarea id="descripcion" rows="2" placeholder="Ingredientes..."></textarea>
+                </div>
+                
+                <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" id="destacado" style="width:auto;">
+                    <label for="destacado" style="margin:0; color:var(--gold);">Marcar como "Recomendado" 🌟</label>
                 </div>
 
                 <button type="submit" class="btn-primary">GUARDAR EN EL MENÚ</button>

@@ -9,27 +9,53 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background-color: var(--bg-dark); color: var(--text-white); font-family: 'Montserrat', sans-serif; padding-bottom: 50px; }
+body { background-color: var(--bg-dark); color: var(--text-white); font-family: 'Montserrat', sans-serif; padding-bottom: 80px; }
 
-/* REUTILIZAMOS TUS ESTILOS DEL HERO Y GRID */
-.hero { height: 35vh; background: url('https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1000') center/cover; position: relative; }
+/* HERO */
+.hero { height: 30vh; background: url('https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=1000') center/cover; position: relative; }
 .overlay { width: 100%; height: 100%; background: linear-gradient(to top, var(--bg-dark), rgba(0,0,0,0.4)); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
-.logo-area h1 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2.5rem; margin-bottom: 5px; }
+.logo-area h1 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2.2rem; margin-bottom: 5px; }
+
+/* BUSCADOR INSTANTÁNEO */
+.search-container { padding: 15px 20px 0 20px; }
+#search-input {
+    width: 100%; padding: 12px 20px; border-radius: 50px; border: 1px solid #333;
+    background: #222; color: white; font-family: 'Montserrat', sans-serif; font-size: 1rem;
+    outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+#search-input:focus { border-color: var(--gold); }
+
+/* FILTROS */
 .filters { display: flex; gap: 10px; padding: 15px 20px; overflow-x: auto; background: var(--bg-dark); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; }
-.filter-btn { background: #333; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; white-space: nowrap; }
+.filter-btn { background: #333; color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; white-space: nowrap; transition: 0.3s; }
 .filter-btn.active { background: var(--gold); color: #000; font-weight: bold; }
 
 /* GRID PRODUCTOS */
 .container { padding: 20px; }
 .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-.card { background: var(--bg-card); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; }
+.card { background: var(--bg-card); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; transition: transform 0.2s; }
+.card:active { transform: scale(0.98); }
+
+/* ETIQUETA RECOMENDADO */
+.badge-destacado {
+    position: absolute; top: 10px; right: 10px; background: linear-gradient(45deg, #FFD700, #DAA520);
+    color: black; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5); z-index: 10;
+}
+
 .img-box { height: 140px; overflow: hidden; }
 .img-box img { width: 100%; height: 100%; object-fit: cover; }
 .info { padding: 12px; }
 .row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-.card h3 { font-size: 1rem; font-weight: 600; }
+.card h3 { font-size: 1rem; font-weight: 600; line-height: 1.2; }
 .price { color: var(--gold); font-weight: bold; }
-.short-desc { font-size: 0.75rem; color: var(--text-gray); }
+.short-desc { font-size: 0.75rem; color: var(--text-gray); margin-bottom: 10px; }
+
+.btn-opinar {
+    width: 100%; background: transparent; border: 1px solid #444; color: #aaa;
+    padding: 6px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-top: 5px;
+}
+.btn-opinar:hover { border-color: var(--gold); color: var(--gold); }
 
 /* ESTADO: AGOTADO */
 .card.agotado { opacity: 0.6; filter: grayscale(100%); pointer-events: none; }
@@ -38,26 +64,35 @@ body { background-color: var(--bg-dark); color: var(--text-white); font-family: 
     background: rgba(255, 0, 0, 0.8); color: white; padding: 5px 20px; font-weight: bold; border: 2px solid white; z-index: 10;
 }
 
-/* --- ESTILOS DEL ADMIN --- */
+/* MODAL DE OPINIÓN */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+.modal-content { background: #222; width: 100%; max-width: 350px; padding: 25px; border-radius: 15px; border: 1px solid #444; text-align: center; }
+.stars { font-size: 2rem; color: #555; margin-bottom: 15px; cursor: pointer; }
+.stars span { transition: color 0.2s; }
+.stars span.active { color: var(--gold); }
+.modal input, .modal textarea { width: 100%; padding: 10px; margin-bottom: 15px; background: #111; border: 1px solid #444; color: white; border-radius: 5px; }
+.modal-actions { display: flex; gap: 10px; }
+.btn-submit { flex: 1; background: var(--gold); border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+.btn-cancel { flex: 1; background: #333; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+
+/* ADMIN ESTILOS */
 .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
 .admin-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 20px; }
 .form-card { background: #222; padding: 20px; border-radius: 10px; margin-bottom: 30px; border: 1px solid #444; }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; color: var(--gold); font-size: 0.9rem; }
-.form-group input, .form-group select, .form-group textarea {
-    width: 100%; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 5px;
-}
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 5px; }
 .btn-primary { width: 100%; padding: 12px; background: var(--gold); border: none; color: black; font-weight: bold; cursor: pointer; border-radius: 5px; }
-.btn-primary:hover { background: #b8962e; }
-
-/* Lista de productos en Admin */
 .admin-item { display: flex; justify-content: space-between; align-items: center; background: #1e1e1e; padding: 10px; margin-bottom: 10px; border-radius: 5px; border-left: 4px solid var(--gold); }
 .admin-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; }
 .item-details { flex-grow: 1; }
 .item-actions { display: flex; gap: 5px; }
 .btn-sm { padding: 5px 10px; font-size: 0.8rem; cursor: pointer; border: none; border-radius: 3px; color: white; }
 .btn-toggle { background: #444; }
+.btn-star { background: #333; color: #555; font-size: 1.2rem; padding: 2px 8px; }
+.btn-star.is-fav { color: var(--gold); }
 .btn-delete { background: #ff5252; }
 .status-text { font-size: 0.8rem; padding: 2px 6px; border-radius: 3px; margin-left: 5px; }
 .status-disponible { background: var(--green-open); color: black; }
 .status-agotado { background: var(--red-closed); color: white; }
+footer { text-align: center; color: #555; padding: 30px 0; font-size: 0.8rem; }

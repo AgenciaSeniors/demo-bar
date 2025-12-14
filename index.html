@@ -14,10 +14,14 @@
         <div class="overlay">
             <div class="logo-area">
                 <h1>THE NIGHT BAR</h1>
-                <p class="slogan">Cocteles • Tapas • Buena Música</p>
+                <p>Cocteles • Tapas • Buena Música</p>
             </div>
         </div>
     </header>
+
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="🔍 ¿Qué se te antoja hoy? (Ej: Mojito)">
+    </div>
 
     <nav class="filters">
         <button class="filter-btn active" onclick="filtrar('todos', this)">Todos</button>
@@ -34,19 +38,29 @@
 
     <footer>
         <p>The Night Bar © 2025</p>
-        <div style="margin-top: 20px;">
-            <a href="admin.html" style="
-                display: inline-block;
-                border: 1px solid #333;
-                padding: 8px 15px;
-                border-radius: 5px;
-                color: #555;
-                text-decoration: none;
-                font-size: 0.8rem;
-                transition: 0.3s;
-            ">🔒 Acceso Admin</a>
+        <div style="margin-top: 15px;">
+            <a href="admin.html" style="text-decoration:none; color:#444; font-size:0.7rem;">🔒 Acceso Admin</a>
         </div>
     </footer>
+
+    <div id="modal-opinion" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--gold); margin-bottom:10px;">¡Tu opinión cuenta!</h3>
+            <p style="margin-bottom:15px; font-size:0.9rem; color:#aaa;" id="modal-prod-name">Producto</p>
+            
+            <div class="stars" id="stars-container">
+                <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+            </div>
+            
+            <input type="text" id="cliente-nombre" placeholder="Tu nombre (Opcional)">
+            <textarea id="cliente-comentario" rows="3" placeholder="¿Qué te pareció?"></textarea>
+            
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-submit" onclick="enviarOpinion()">Enviar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

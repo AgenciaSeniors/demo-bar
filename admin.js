@@ -1,13 +1,9 @@
-// --- SEGURIDAD SIMPLE ---
+// --- SEGURIDAD ---
 const CLAVE_SECRETA = "1234"; 
-
 const entrada = prompt("🔒 Área restringida. Ingresa la contraseña de Administrador:");
-if (entrada !== CLAVE_SECRETA) {
-    alert("⛔ Contraseña incorrecta.");
-    window.location.href = "index.html"; 
-}
+if (entrada !== CLAVE_SECRETA) { alert("⛔ Contraseña incorrecta."); window.location.href = "index.html"; }
 
-// --- CONFIGURACIÓN ---
+// --- CONFIG ---
 const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -33,6 +29,7 @@ async function cargarAdmin() {
             : '<span class="status-text status-disponible">DISPONIBLE</span>';
         
         const btnTexto = esAgotado ? 'Activar' : 'Agotar';
+        const claseFav = item.destacado ? 'is-fav' : ''; // Para el color dorado
 
         const div = document.createElement('div');
         div.className = 'admin-item';
@@ -42,79 +39,65 @@ async function cargarAdmin() {
                 <div class="item-details">
                     <strong>${item.nombre}</strong> ($${item.precio})
                     ${estadoBadge}
+                    ${item.destacado ? '🌟' : ''}
                 </div>
             </div>
             <div class="item-actions">
+                <button class="btn-sm btn-star ${claseFav}" onclick="toggleDestacado(${item.id}, ${item.destacado})">★</button>
                 <button class="btn-sm btn-toggle" onclick="toggleEstado(${item.id}, '${item.estado}')">${btnTexto}</button>
-                <button class="btn-sm btn-delete" onclick="eliminarProducto(${item.id})">Borrar</button>
+                <button class="btn-sm btn-delete" onclick="eliminarProducto(${item.id})">X</button>
             </div>
         `;
         lista.appendChild(div);
     });
 }
 
-// --- SUBIR PRODUCTO CON FOTO ---
+// --- CREAR PRODUCTO ---
 document.getElementById('form-producto').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
-    btn.textContent = "Subiendo foto...";
-    btn.disabled = true;
+    btn.textContent = "Guardando..."; btn.disabled = true;
 
     try {
         const nombre = document.getElementById('nombre').value;
         const precio = document.getElementById('precio').value;
         const categoria = document.getElementById('categoria').value;
         const desc = document.getElementById('descripcion').value;
+        const destacado = document.getElementById('destacado').checked; // Valor del checkbox
         const fileInput = document.getElementById('imagen-file');
 
-        if (fileInput.files.length === 0) throw new Error("Debes seleccionar una imagen");
-        
+        if (fileInput.files.length === 0) throw new Error("Falta imagen");
         const archivo = fileInput.files[0];
-        // Crear nombre único: fecha + nombre original limpio
         const nombreArchivo = Date.now() + '_' + archivo.name.replace(/\s/g, '');
 
-        // 1. Subir a Supabase Storage
-        const { error: uploadError } = await supabaseClient
-            .storage
-            .from('imagenes')
-            .upload(nombreArchivo, archivo);
+        const { error: upErr } = await supabaseClient.storage.from('imagenes').upload(nombreArchivo, archivo);
+        if (upErr) throw upErr;
 
-        if (uploadError) throw uploadError;
+        const { data: urlData } = supabaseClient.storage.from('imagenes').getPublicUrl(nombreArchivo);
 
-        // 2. Obtener URL pública
-        const { data: urlData } = supabaseClient
-            .storage
-            .from('imagenes')
-            .getPublicUrl(nombreArchivo);
+        const { error: dbErr } = await supabaseClient.from('productos').insert([{
+            nombre: nombre, precio: precio, categoria: categoria,
+            imagen_url: urlData.publicUrl, descripcion: desc, 
+            estado: 'disponible', activo: true,
+            destacado: destacado // Guardamos si es favorito
+        }]);
 
-        // 3. Guardar en Base de Datos
-        const { error: dbError } = await supabaseClient
-            .from('productos')
-            .insert([{
-                nombre: nombre,
-                precio: precio,
-                categoria: categoria,
-                imagen_url: urlData.publicUrl,
-                descripcion: desc,
-                estado: 'disponible'
-            }]);
+        if (dbErr) throw dbErr;
 
-        if (dbError) throw dbError;
-
-        alert("¡Producto guardado exitosamente!");
+        alert("¡Guardado!");
         document.getElementById('form-producto').reset();
         cargarAdmin();
 
-    } catch (err) {
-        alert("Error: " + err.message);
-        console.error(err);
-    } finally {
-        btn.textContent = "GUARDAR EN EL MENÚ";
-        btn.disabled = false;
-    }
+    } catch (err) { alert("Error: " + err.message); } 
+    finally { btn.textContent = "GUARDAR EN EL MENÚ"; btn.disabled = false; }
 });
 
 // --- ACCIONES ---
+async function toggleDestacado(id, valorActual) {
+    await supabaseClient.from('productos').update({ destacado: !valorActual }).eq('id', id);
+    cargarAdmin();
+}
+
 async function toggleEstado(id, estadoActual) {
     const nuevo = estadoActual === 'disponible' ? 'agotado' : 'disponible';
     await supabaseClient.from('productos').update({ estado: nuevo }).eq('id', id);
@@ -122,10 +105,9 @@ async function toggleEstado(id, estadoActual) {
 }
 
 async function eliminarProducto(id) {
-    if(!confirm("¿Eliminar del menú?")) return;
+    if(!confirm("¿Eliminar?")) return;
     await supabaseClient.from('productos').update({ activo: false }).eq('id', id);
     cargarAdmin();
 }
 
-// Iniciar
 cargarAdmin();
