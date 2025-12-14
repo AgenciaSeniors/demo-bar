@@ -3,33 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>Acceso Gerencial | The Night Bar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 </head>
 <body>
-    <div class="login-container">
-        <div class="modal-content" style="padding: 30px; animation: none;">
-            <h2 style="color:var(--gold); text-align:center; margin-bottom:20px;">Acceso Gerencial</h2>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h1 class="login-logo">THE NIGHT BAR</h1>
+            <p class="login-subtitle">Acceso exclusivo para gerencia</p>
+
             <form id="login-form">
-                <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="email" placeholder="admin@nightbar.com" required>
+                <div class="input-group">
+                    <label>Usuario</label>
+                    <input type="email" id="email" class="input-stylish" placeholder="correo@ejemplo.com" required>
                 </div>
-                <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                
+                <div class="input-group">
+                    <label>Clave de Acceso</label>
+                    <input type="password" id="password" class="input-stylish" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn-primary" id="btn-login">ENTRAR</button>
-                <p id="error-msg" style="color:var(--red-closed); font-size:0.8rem; text-align:center; margin-top:15px;"></p>
+
+                <button type="submit" class="btn-big-action" id="btn-login" style="margin-top:20px;">
+                    INICIAR SESIÓN
+                </button>
+                
+                <p id="error-msg" style="color:#ff5252; font-size:0.85rem; margin-top:20px; min-height:20px;"></p>
             </form>
-            <a href="index.html" style="display:block; text-align:center; margin-top:20px; color:#666; font-size:0.8rem; text-decoration:none;">← Volver al Menú</a>
+
+            <a href="index.html" style="color:#666; font-size:0.8rem; text-decoration:none; margin-top:30px; display:inline-block; border-bottom:1px solid transparent; transition:0.3s;">
+                ← Regresar a la Carta Digital
+            </a>
         </div>
     </div>
 
     <script>
+        // Lógica de Login (Igual que antes, solo cambia el diseño)
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -37,17 +49,16 @@
             const btn = document.getElementById('btn-login');
             const errorMsg = document.getElementById('error-msg');
 
-            btn.textContent = "Verificando..."; btn.disabled = true;
+            btn.textContent = "Verificando..."; btn.style.opacity = "0.7";
             errorMsg.textContent = "";
 
             const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
+                email: email, password: password
             });
 
             if (error) {
-                errorMsg.textContent = "Error: " + error.message;
-                btn.textContent = "ENTRAR"; btn.disabled = false;
+                errorMsg.textContent = "Credenciales incorrectas. Intente nuevamente.";
+                btn.textContent = "INICIAR SESIÓN"; btn.style.opacity = "1";
             } else {
                 window.location.href = "admin.html";
             }

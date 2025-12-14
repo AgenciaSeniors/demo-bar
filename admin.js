@@ -15,10 +15,11 @@ async function cerrarSesion() {
     window.location.href = "login.html";
 }
 
-// 2. CARGAR LISTA
+// 2. CARGAR LISTA (DISEÑO ACTUALIZADO)
 async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
-    lista.innerHTML = '<p style="text-align:center; color:#666;">Cargando...</p>';
+    // Loader simple
+    lista.innerHTML = '<div style="text-align:center; padding:40px;"><span style="color:var(--gold);">⟳ Cargando...</span></div>';
 
     let { data: productos, error } = await supabaseClient
         .from('productos')
@@ -28,34 +29,39 @@ async function cargarAdmin() {
 
     if (error) { alert("Error: " + error.message); return; }
     
-    // Renderizado optimizado
     const html = productos.map(item => {
         const esAgotado = item.estado === 'agotado';
-        const badgeColor = esAgotado ? 'red' : 'green';
-        const badgeText = esAgotado ? 'AGOTADO' : 'DISPONIBLE';
-        const favClass = item.destacado ? 'is-fav' : '';
-        const img = item.imagen_url || 'https://via.placeholder.com/50';
+        const statusClass = esAgotado ? 'status-bad' : 'status-ok';
+        const statusText = esAgotado ? 'AGOTADO' : 'ACTIVO';
+        const favColor = item.destacado ? 'var(--gold)' : '#444';
+        const img = item.imagen_url || 'https://via.placeholder.com/60';
 
         return `
-            <div class="admin-item">
-                <img src="${img}" alt="img">
-                <div style="flex-grow:1;">
-                    <div style="font-weight:bold; color:white;">${item.nombre}</div>
-                    <div style="font-size:0.8rem; color:#888;">$${item.precio} <span style="color:${badgeColor}; margin-left:5px;">● ${badgeText}</span></div>
+            <div class="inventory-item">
+                <img src="${img}" class="item-thumb" alt="img">
+                <div class="item-meta">
+                    <div class="item-title">${item.nombre} ${item.destacado ? '🌟' : ''}</div>
+                    <div class="item-price">$${item.precio}</div>
+                    <span class="item-status ${statusClass}">${statusText}</span>
                 </div>
-                <div class="item-actions">
-                    <button class="btn-sm btn-star ${favClass}" onclick="toggleDestacado(${item.id}, ${item.destacado})">★</button>
-                    <button class="btn-sm btn-toggle" onclick="toggleEstado(${item.id}, '${item.estado}')">I/O</button>
-                    <button class="btn-sm btn-delete" onclick="eliminarProducto(${item.id})">X</button>
+                <div class="action-btn-group">
+                    <button class="icon-btn" style="color:${favColor}; background:#222;" onclick="toggleDestacado(${item.id}, ${item.destacado})" title="Destacar">
+                        <span class="material-icons">star</span>
+                    </button>
+                    <button class="icon-btn btn-edit" onclick="toggleEstado(${item.id}, '${item.estado}')" title="Cambiar Estado">
+                        <span class="material-icons">power_settings_new</span>
+                    </button>
+                    <button class="icon-btn btn-del" onclick="eliminarProducto(${item.id})" title="Eliminar">
+                        <span class="material-icons">delete</span>
+                    </button>
                 </div>
             </div>
         `;
     }).join('');
 
-    lista.innerHTML = html;
+    lista.innerHTML = html || '<p style="text-align:center; color:#666">No hay productos aún.</p>';
 }
 
-// 3. IA GEMINI (ACTUALIZADA)
 // 2. GENERAR CURIOSIDAD CON IA (CORREGIDO Y ACTUALIZADO)
 async function generarCuriosidad() {
     const nombre = document.getElementById('nombre').value;

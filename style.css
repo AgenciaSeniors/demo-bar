@@ -200,3 +200,141 @@ body::before {
 /* LOGIN & ADMIN ESTILOS SIMPLES */
 .login-container { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
 .admin-item { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #333; display: flex; align-items: center; gap: 15px; }
+
+/* --- ESTILOS EXCLUSIVOS LOGIN & ADMIN --- */
+
+/* Fondo específico para gestión (más oscuro y elegante) */
+body.admin-body {
+    background: radial-gradient(circle at 50% -20%, #1a1a20, #050505);
+    min-height: 100vh;
+}
+
+/* LOGIN CARD FLOTANTE */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&w=1000&q=60') center/cover;
+    position: relative;
+}
+.login-wrapper::before {
+    content:''; position:absolute; inset:0;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+}
+
+.login-card {
+    position: relative; z-index: 2;
+    background: rgba(20, 20, 25, 0.85);
+    border: 1px solid rgba(255,215,0,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    padding: 40px 30px;
+    border-radius: 20px;
+    width: 100%; max-width: 400px;
+    text-align: center;
+    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.login-logo {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 2rem;
+    margin-bottom: 5px;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.login-subtitle {
+    color: #888; font-size: 0.85rem; margin-bottom: 30px; letter-spacing: 1px;
+}
+
+/* ADMIN DASHBOARD */
+.admin-header {
+    background: rgba(20, 20, 20, 0.95);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 15px 20px;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+.admin-title {
+    font-family: 'Playfair Display', serif; color: white; margin: 0; font-size: 1.5rem;
+}
+.admin-badge {
+    background: linear-gradient(45deg, var(--gold), #b8860b);
+    color: black; padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800;
+}
+
+.dashboard-grid {
+    display: grid; gap: 20px; padding: 20px;
+    grid-template-columns: 1fr;
+}
+@media(min-width: 768px) {
+    .dashboard-grid { grid-template-columns: 350px 1fr; align-items: start; }
+}
+
+/* FORMULARIO DE ALTA ESTILIZADO */
+.upload-zone {
+    background: #1a1a20; border-radius: 16px; padding: 25px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.input-group { position: relative; margin-bottom: 20px; }
+.input-group label {
+    position: absolute; left: 15px; top: -10px;
+    background: #1a1a20; padding: 0 5px;
+    color: var(--gold); font-size: 0.75rem; font-weight: 600;
+}
+.input-stylish {
+    width: 100%; background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 15px; border-radius: 10px; color: white; font-size: 1rem;
+    transition: 0.3s;
+}
+.input-stylish:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); outline: none; }
+
+.file-upload-wrapper {
+    position: relative; height: 150px; border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.2);
+}
+.file-upload-wrapper:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
+.file-upload-wrapper input { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
+.file-upload-icon { font-size: 2rem; color: #666; margin-bottom: 10px; }
+.file-upload-text { color: #888; font-size: 0.8rem; }
+
+/* LISTA DE INVENTARIO MEJORADA */
+.inventory-list {
+    background: #1a1a20; border-radius: 16px; padding: 20px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.inventory-item {
+    display: flex; align-items: center; gap: 15px;
+    padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: 0.2s;
+}
+.inventory-item:last-child { border-bottom: none; }
+.inventory-item:hover { background: rgba(255,255,255,0.02); }
+
+.item-thumb { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+.item-meta { flex-grow: 1; }
+.item-title { font-weight: 600; font-size: 1rem; color: white; }
+.item-price { color: var(--gold); font-size: 0.9rem; }
+.item-status { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+.status-ok { background: rgba(0, 230, 118, 0.2); color: #00e676; }
+.status-bad { background: rgba(255, 82, 82, 0.2); color: #ff5252; }
+
+/* Botones de acción pequeños */
+.action-btn-group { display: flex; gap: 8px; }
+.icon-btn {
+    width: 35px; height: 35px; border-radius: 8px; border: none;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; font-size: 1rem;
+}
+.btn-edit { background: #333; color: white; }
+.btn-edit:hover { background: var(--gold); color: black; }
+.btn-del { background: rgba(255, 82, 82, 0.1); color: #ff5252; }
+.btn-del:hover { background: #ff5252; color: white; }
