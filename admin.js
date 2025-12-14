@@ -129,7 +129,9 @@ async function generarCuriosidad() {
         btn.disabled = false;
         btn.textContent = "✨ Generar";
     }
-}
+
+
+
 
 // 4. GUARDAR PRODUCTO (Subida + Inserción)
 document.getElementById('form-producto').addEventListener('submit', async (e) => {

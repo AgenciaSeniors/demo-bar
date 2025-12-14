@@ -1,11 +1,3 @@
-// CONFIGURACIÓN
-const CONFIG = {
-    SUPABASE_URL: 'https://qspwtmfmolvqlzsbwlzv.supabase.co',
-    SUPABASE_KEY: 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU',
-    GEMINI_KEY: 'AIzaSyCXWHwntRNF_IcZAjPPJyARZp_uAhn8QL8'
-};
-
-const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
 let searchTimeout;
 let todosLosProductos = [];
