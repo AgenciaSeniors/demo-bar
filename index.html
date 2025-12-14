@@ -6,6 +6,7 @@
     <title>The Night Bar | Experience</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
 </head>
@@ -55,30 +56,36 @@
         <a href="login.html" class="admin-link">🔒 Acceso Gerencial</a>
     </footer>
 
-    <div id="modal-detalle" class="modal" onclick="if(event.target == this) cerrarDetalle()">
-        <div class="modal-content">
-            <span class="close-btn-float" onclick="cerrarDetalle()">×</span>
-            <img id="det-img" src="" class="modal-img-full" alt="Detalle">
+    <div id="modal-detalle" class="modal-overlay" onclick="if(event.target == this) cerrarDetalle()">
+    <div class="modal-card">
+        <div class="btn-close-modal" onclick="cerrarDetalle()">✕</div>
+        
+        <div class="modal-image-wrapper">
+            <img id="det-img" src="" alt="Producto">
+        </div>
+        
+        <div class="modal-body-content">
+            <h2 id="det-titulo" class="modal-title-elegant">Nombre Producto</h2>
+            <span id="det-precio" class="modal-price-tag">$0.00</span>
             
-            <div class="modal-body">
-                <h2 id="det-titulo" class="modal-title">Nombre</h2>
-                <span id="det-precio" class="modal-price">$0</span>
-                <p id="det-desc" style="color:#ccc; line-height:1.5; margin-bottom:20px;">Descripción...</p>
+            <p id="det-desc" class="modal-description">Descripción del producto...</p>
 
-                <div class="ia-box" id="box-curiosidad">
-                    <span class="ia-label">✨ DATO CURIOSO</span>
-                    <p id="det-curiosidad">...</p>
-                </div>
-
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-                    <span style="color:#777; font-size:0.9rem;">Opiniones:</span>
-                    <span id="det-rating-big" style="color:var(--gold); font-size:1.2rem; font-weight:bold;">★ --</span>
-                </div>
-
-                <button class="btn-big-action" onclick="abrirOpinionDesdeDetalle()">DEJAR RESEÑA</button>
+            <div id="box-curiosidad" class="ia-badge" style="display:none;">
+                <span class="ia-title">✨ Curiosidad del Chef</span>
+                <p id="det-curiosidad" class="ia-text">...</p>
             </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <span style="color:#666; font-size:0.8rem;">Valoración:</span>
+                <span id="det-rating-big" style="color:#FFD700; font-size:1.1rem; font-weight:bold;">★ 5.0</span>
+            </div>
+
+            <button class="btn-modal-action" onclick="abrirOpinionDesdeDetalle()">
+                Dejar Opinión
+            </button>
         </div>
     </div>
+</div>
 
     <div id="modal-opinion" class="modal" onclick="if(event.target == this) cerrarModalOpiniones()">
         <div class="modal-content" style="padding: 30px; text-align: center;">
