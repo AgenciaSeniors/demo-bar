@@ -93,10 +93,6 @@ body::before {
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: pointer;
 }
-.filter-btn.active { 
-    background: var(--gold); color: black; border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); transform: scale(1.05);
-}
 
 /* --- GRID DE PRODUCTOS --- */
 .container { padding: 25px 20px; }
