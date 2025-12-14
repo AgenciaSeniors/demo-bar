@@ -14,7 +14,7 @@
     <div class="login-wrapper">
         <div class="login-card">
             <h1 class="login-logo">THE NIGHT BAR</h1>
-            <p class="login-subtitle" style="color:#888; margin-bottom:30px;">Acceso exclusivo para gerencia</p>
+            <p class="login-subtitle">Panel de Control</p>
 
             <form id="login-form">
                 <div class="input-group">
@@ -23,7 +23,7 @@
                 </div>
                 
                 <div class="input-group">
-                    <label>Clave de Acceso</label>
+                    <label>Contraseña</label>
                     <input type="password" id="password" class="input-stylish" placeholder="••••••••" required>
                 </div>
 
@@ -31,11 +31,11 @@
                     INICIAR SESIÓN
                 </button>
                 
-                <p id="error-msg" style="color:#ff5252; font-size:0.85rem; margin-top:20px;"></p>
+                <p id="error-msg" style="color:#ff5252; font-size:0.8rem; margin-top:20px; min-height:20px;"></p>
             </form>
 
-            <a href="index.html" style="color:#666; font-size:0.8rem; text-decoration:none; display:block; margin-top:30px;">
-                ← Regresar a la Carta Digital
+            <a href="index.html" style="color:#666; font-size:0.8rem; text-decoration:none; display:block; margin-top:30px; border-top:1px solid #333; padding-top:15px;">
+                ← Volver al Menú
             </a>
         </div>
     </div>
@@ -55,7 +55,7 @@
             });
 
             if (error) {
-                errorMsg.textContent = "Credenciales incorrectas.";
+                errorMsg.textContent = "Credenciales inválidas.";
                 btn.textContent = "INICIAR SESIÓN"; btn.style.opacity = "1";
             } else {
                 window.location.href = "admin.html";
