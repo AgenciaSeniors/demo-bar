@@ -62,44 +62,49 @@ async function cargarAdmin() {
     lista.innerHTML = html || '<p style="text-align:center; color:#666">No hay productos aún.</p>';
 }
 
-// 2. GENERAR CURIOSIDAD CON IA (CORREGIDO Y ACTUALIZADO)
+// 3. IA GEMINI (CORREGIDO A MODELO ESTABLE)
 async function generarCuriosidad() {
     const nombre = document.getElementById('nombre').value;
     const campo = document.getElementById('curiosidad');
     const loader = document.getElementById('loader-ia');
     const btn = document.getElementById('btn-ia');
 
-    // Validación básica
-    if (!nombre) { 
-        alert("⚠️ Por favor, escribe primero el nombre del producto."); 
-        return; 
-    }
+    if (!nombre) { alert("Escribe el nombre del producto primero."); return; }
 
-    // Activar estado de carga
-    btn.disabled = true; 
-    btn.textContent = "Generando...";
-    loader.style.display = "inline-block"; 
-    campo.value = "";
+    btn.disabled = true; loader.style.display = "block"; campo.value = "";
 
-    // TU CLAVE DE API (La que me pasaste)
-    const API_KEY = 'AIzaSyCXWHwntRNF_IcZAjPPJyARZp_uAhn8QL8'; 
+    // Usamos la clave desde config.js
+    const API_KEY = CONFIG.GEMINI_KEY; 
     
-    // CAMBIO IMPORTANTE: Usamos el modelo 'gemini-1.5-flash' que es más rápido y estable para esto
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    // CORRECCIÓN: Usamos 'gemini-pro' que es el modelo más estable actualmente
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
 
-    const prompt = `Actúa como un experto gastronómico. Escribe una curiosidad histórica o cultural breve (máximo 25 palabras) sobre: "${nombre}". Que sea un dato real, interesante y sin introducciones.`;
+    const prompt = `Escribe un dato curioso histórico, científico o cultural breve (máximo 25 palabras) sobre: "${nombre}". Tono interesante. Sin introducciones.`;
 
     try {
-        const response = await fetch(URL, {
+        const res = await fetch(URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ 
-                    parts: [{ text: prompt }] 
-                }]
-            })
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
+        
+        if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);
 
+        const data = await res.json();
+        
+        if (data.candidates && data.candidates.length > 0) {
+            campo.value = data.candidates[0].content.parts[0].text;
+        } else {
+            campo.value = "No se pudo generar un dato.";
+        }
+    } catch (e) {
+        console.error("Error detallado:", e);
+        alert("Hubo un problema conectando con la IA. Intenta de nuevo.");
+        campo.value = "Error al generar.";
+    } finally {
+        loader.style.display = "none"; btn.disabled = false;
+    }
+}
         const data = await response.json();
 
         // Verificamos si Google nos dio un error
