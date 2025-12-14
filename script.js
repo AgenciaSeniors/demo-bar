@@ -63,7 +63,7 @@ function renderizarMenu(lista) {
         const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
         const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
         const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
-        const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : 'Nuevo';
+        const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : '';
         
         // CORRECCIÓN: Eliminado el style="animation..." y opacity:0
         return `

@@ -12,44 +12,64 @@ async function cerrarSesion() {
     window.location.href = "login.html";
 }
 
+// En admin.js: Reemplaza la función cargarAdmin por esta
+
 async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
     if (lista) lista.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa;">⟳ Cargando...</div>';
 
+    // Traemos los productos activos
     let { data: productos, error } = await supabaseClient
         .from('productos')
         .select('*')
-        .eq('activo', true)
+        .eq('activo', true) // Solo trae los que NO han sido eliminados (papelera)
         .order('id', { ascending: false });
 
     if (error) { alert("Error: " + error.message); return; }
     
+    if (!productos || productos.length === 0) {
+        if (lista) lista.innerHTML = '<p style="text-align:center; padding:20px; color:#888;">El inventario está vacío.<br><small>Si borraste productos por error, contacta al soporte de base de datos.</small></p>';
+        return;
+    }
+
     const html = productos.map(item => {
+        // Lógica de Estado
         const esAgotado = item.estado === 'agotado';
-        const statusClass = esAgotado ? 'status-bad' : 'status-ok';
-        const statusText = esAgotado ? 'AGOTADO' : 'ACTIVO';
+        
+        // Textos y Colores solicitados
+        const statusText = esAgotado ? 'AGOTADO' : 'DISPONIBLE'; // Ahora dice DISPONIBLE
+        const statusClass = esAgotado ? 'status-bad' : 'status-ok'; // Rojo o Verde
+        
+        // Icono del botón de estado (cambia visualmente para indicar la acción)
+        const iconState = esAgotado ? 'toggle_off' : 'toggle_on';
+        const colorStateBtn = esAgotado ? '#666' : 'var(--green-success)';
+
         const favColor = item.destacado ? 'var(--gold)' : '#444';
         const img = item.imagen_url || 'https://via.placeholder.com/60';
 
-        // Renderizado usando las nuevas clases CSS
         return `
             <div class="inventory-item">
                 <img src="${img}" class="item-thumb" alt="img">
+                
                 <div class="item-meta">
                     <span class="item-title">
                         ${item.nombre} ${item.destacado ? '🌟' : ''}
                     </span>
                     <span class="item-price">$${item.precio}</span>
+                    
                     <span class="item-status ${statusClass}">${statusText}</span>
                 </div>
+
                 <div class="action-btn-group">
-                    <button class="icon-btn btn-star" style="color:${favColor}" onclick="toggleDestacado(${item.id}, ${item.destacado})" title="Destacar">
+                    <button class="icon-btn" style="color:${favColor}" onclick="toggleDestacado(${item.id}, ${item.destacado})" title="Destacar en carta">
                         <span class="material-icons">star</span>
                     </button>
-                    <button class="icon-btn btn-edit" onclick="toggleEstado(${item.id}, '${item.estado}')" title="Estado">
-                        <span class="material-icons">power_settings_new</span>
+
+                    <button class="icon-btn" style="color:${colorStateBtn}" onclick="toggleEstado(${item.id}, '${item.estado}')" title="Cambiar Disponibilidad">
+                        <span class="material-icons">${iconState}</span>
                     </button>
-                    <button class="icon-btn btn-del" onclick="eliminarProducto(${item.id})" title="Borrar">
+
+                    <button class="icon-btn btn-del" onclick="eliminarProducto(${item.id})" title="Eliminar definitivamente">
                         <span class="material-icons">delete</span>
                     </button>
                 </div>
@@ -57,10 +77,10 @@ async function cargarAdmin() {
         `;
     }).join('');
 
-    if (lista) lista.innerHTML = html || '<p style="text-align:center;">Inventario vacío.</p>';
+    if (lista) lista.innerHTML = html;
 }
 
-// ... (El resto de funciones: generarCuriosidad, guardar, eliminar, siguen igual que en tu último archivo funcional) ...
+
 // Copia el resto de tu admin.js aquí (generarCuriosidad, form submit, etc.)
 // Solo asegúrate de que generarCuriosidad use la API KEY desde CONFIG.GEMINI_KEY
 // y el modelo 'gemini-1.5-flash-001'
