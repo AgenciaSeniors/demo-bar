@@ -1,14 +1,14 @@
 // --- SEGURIDAD SIMPLE ---
-// Cambia "1234" por la contraseña que tú quieras
 const CLAVE_SECRETA = "1234"; 
 
 const entrada = prompt("🔒 Área restringida. Ingresa la contraseña de Administrador:");
 
 if (entrada !== CLAVE_SECRETA) {
     alert("⛔ Contraseña incorrecta. Acceso denegado.");
-    window.location.href = "index.html"; // Lo devolvemos al menú público
+    window.location.href = "index.html"; 
 }
-// --- 1. CONFIGURACIÓN (MISMA QUE EN SCRIPT.JS) ---
+
+// --- 1. CONFIGURACIÓN ---
 const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -18,18 +18,18 @@ async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
     lista.innerHTML = 'Cargando inventario...';
 
-    let { data: productos, error } = await supabase
+    // CORRECCIÓN: Ahora usamos supabaseClient
+    let { data: productos, error } = await supabaseClient
         .from('productos')
         .select('*')
-        .eq('activo', true) // Solo mostrar los que no has borrado
+        .eq('activo', true)
         .order('id', { ascending: false });
 
-    if (error) { alert('Error cargando'); return; }
+    if (error) { alert('Error cargando: ' + error.message); return; }
 
     lista.innerHTML = '';
 
     productos.forEach(item => {
-        // Definir color y texto según estado
         const esAgotado = item.estado === 'agotado';
         const estadoBadge = esAgotado 
             ? '<span class="status-text status-agotado">AGOTADO</span>' 
@@ -70,7 +70,8 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
     const imagen = document.getElementById('imagen').value;
     const desc = document.getElementById('descripcion').value;
 
-    const { error } = await supabase
+    // CORRECCIÓN: Usamos supabaseClient
+    const { error } = await supabaseClient
         .from('productos')
         .insert([{
             nombre: nombre,
@@ -86,28 +87,29 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
     } else {
         alert('¡Producto Agregado!');
         document.getElementById('form-producto').reset();
-        cargarAdmin(); // Recargar la lista
+        cargarAdmin(); 
     }
 });
 
-// --- 4. CAMBIAR ESTADO (AGOTADO/DISPONIBLE) ---
+// --- 4. CAMBIAR ESTADO ---
 async function toggleEstado(id, estadoActual) {
     const nuevoEstado = estadoActual === 'disponible' ? 'agotado' : 'disponible';
 
-    const { error } = await supabase
+    // CORRECCIÓN: Usamos supabaseClient
+    const { error } = await supabaseClient
         .from('productos')
         .update({ estado: nuevoEstado })
         .eq('id', id);
 
-    if (!error) cargarAdmin(); // Refrescar vista
+    if (!error) cargarAdmin(); 
 }
 
-// --- 5. ELIMINAR PRODUCTO (SOFT DELETE) ---
+// --- 5. ELIMINAR PRODUCTO ---
 async function eliminarProducto(id) {
     if(!confirm("¿Seguro que quieres eliminar este plato del menú?")) return;
 
-    // No borramos el dato, solo ponemos activo=false por seguridad
-    const { error } = await supabase
+    // CORRECCIÓN: Usamos supabaseClient
+    const { error } = await supabaseClient
         .from('productos')
         .update({ activo: false })
         .eq('id', id);
@@ -115,5 +117,4 @@ async function eliminarProducto(id) {
     if (!error) cargarAdmin();
 }
 
-// Iniciar
 cargarAdmin();
