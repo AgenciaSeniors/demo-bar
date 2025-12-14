@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMINISTRADOR | The Night Bar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 style="color: var(--gold);">PANEL DE CONTROL</h1>
+            <p>Gestiona tu menú en tiempo real</p>
+        </div>
+
+        <div class="form-card">
+            <h3 style="margin-bottom:15px; color:white;">+ Nuevo Producto</h3>
+            <form id="form-producto">
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="nombre" placeholder="Ej: Café Expresso" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Precio</label>
+                    <input type="number" id="precio" placeholder="150" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="categoria">
+                        <option value="cocteles">Cocteles</option>
+                        <option value="cervezas">Cervezas</option>
+                        <option value="tapas">Para Picar</option>
+                        <option value="cafes">Cafés / Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>URL de Imagen (Copia y pega el link)</label>
+                    <input type="text" id="imagen" placeholder="https://..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción Corta</label>
+                    <textarea id="descripcion" rows="2" placeholder="Ingredientes..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">GUARDAR EN EL MENÚ</button>
+            </form>
+        </div>
+
+        <h3 style="margin-bottom:15px; color:var(--gold);">Inventario Actual</h3>
+        <div id="lista-admin">
+            </div>
+
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

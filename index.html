@@ -4,71 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú Digital | The Night Bar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
     <header class="hero">
         <div class="overlay">
-            <div class="hero-content">
-                <div class="logo-area">
-                    <h1>THE NIGHT BAR</h1>
-                    <p class="slogan">Coctelería de Autor & Tapas</p>
-                </div>
-
-                <div class="status-box">
-                    <span id="status-badge" class="badge">Consultando...</span>
-                    <span class="hours">Horario: 6:00 PM - 2:00 AM</span>
-                </div>
-
-                <div class="contact-info">
-                    <a href="#" class="location-link"><span class="material-icons">place</span> Calle Independencia #123</a>
-                </div>
+            <div class="logo-area">
+                <h1>THE NIGHT BAR</h1>
+                <p class="slogan">Cocteles • Tapas • Buena Música</p>
             </div>
         </div>
     </header>
 
-    <nav class="filters" id="navbar">
-        <button class="filter-btn active" onclick="filterMenu('todos')">Todo</button>
-        <button class="filter-btn" onclick="filterMenu('cocteles')">Cocteles</button>
-        <button class="filter-btn" onclick="filterMenu('cervezas')">Cervezas</button>
-        <button class="filter-btn" onclick="filterMenu('tapas')">Para Picar</button>
+    <nav class="filters">
+        <button class="filter-btn active" onclick="filtrar('todos', this)">Todos</button>
+        <button class="filter-btn" onclick="filtrar('cocteles', this)">Cocteles</button>
+        <button class="filter-btn" onclick="filtrar('cervezas', this)">Cervezas</button>
+        <button class="filter-btn" onclick="filtrar('tapas', this)">Para Picar</button>
     </nav>
 
     <main class="container">
-        <div class="menu-grid" id="menu-container">
-            </div>
+        <div id="menu-grid" class="menu-grid">
+            <p style="text-align:center; width:100%;">Cargando menú...</p>
+        </div>
     </main>
 
     <footer>
-        <p>© 2025 The Night Bar</p>
-        <div class="agency-signature">
-            <small>Desarrollado por <span style="color:var(--gold)">AGENCIA SEÑORES</span></small>
-        </div>
+        <p>The Night Bar © 2025</p>
     </footer>
-
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <div class="modal-img-container">
-                <img id="modal-img" src="" alt="Detalle">
-            </div>
-            <div class="modal-body">
-                <span id="modal-cat" class="modal-category">Categoría</span>
-                <h2 id="modal-title">Nombre del Producto</h2>
-                <p id="modal-desc">Descripción detallada...</p>
-                
-                <div class="modal-footer">
-                    <div class="price-tag" id="modal-price">$0</div>
-                    <button id="whatsapp-btn" class="cta-btn">
-                        <span class="material-icons">whatsapp</span> Pedir Ahora
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="script.js"></script>
 </body>
