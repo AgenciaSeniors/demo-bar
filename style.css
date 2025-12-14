@@ -85,12 +85,12 @@ body::before {
 }
 .filters::-webkit-scrollbar { display: none; }
 
-.filter-btn:hover {
-    background: rgba(255, 255, 255, 0.1); /* Fondo un poco más claro */
-    border-color: var(--gold);             /* Borde dorado */
-    color: white;                          /* Texto blanco brillante */
-    transform: translateY(-3px);           /* Se eleva un poco */
-    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2); /* Sombra dorada suave */
+.filter-btn:hover { 
+    background: var(--bg-surface); color: var(--text-secondary); 
+    border: 1px solid rgba(255,255,255,0.1); 
+    padding: 10px 20px; border-radius: 12px; 
+    font-size: 0.85rem; font-weight: 600; white-space: nowrap; 
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: pointer;
 }
 .filter-btn.active { 
