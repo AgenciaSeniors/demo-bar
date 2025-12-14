@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMINISTRADOR | The Night Bar</title>
+    <title>ADMIN | The Night Bar</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
 </head>
 <body>
 
     <div class="admin-container">
         <div class="admin-header">
             <h1 style="color: var(--gold);">PANEL DE CONTROL</h1>
-            <a href="index.html" style="color: #666; font-size: 0.8rem;">← Volver al Menú</a>
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <a href="index.html" style="color:#999; font-size:0.8rem; text-decoration:none;">← Ver Menú</a>
+                <button onclick="cerrarSesion()" style="background:transparent; border:none; color:var(--red-closed); cursor:pointer; font-size:0.8rem;">Cerrar Sesión</button>
+            </div>
         </div>
 
         <div class="form-card">
@@ -21,51 +25,55 @@
             <form id="form-producto">
                 <div class="form-group">
                     <label>Nombre</label>
-                    <input type="text" id="nombre" placeholder="Ej: Café Expresso" required>
+                    <input type="text" id="nombre" placeholder="Ej: Pizza Jamón" required>
                 </div>
-                <div class="form-group">
-                    <label>Precio</label>
-                    <input type="number" id="precio" placeholder="150" required>
+                <div style="display:flex; gap:10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Precio</label>
+                        <input type="number" id="precio" placeholder="0" required>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Categoría</label>
+                        <select id="categoria">
+                            <option value="cocteles">Cocteles</option>
+                            <option value="cervezas">Cervezas</option>
+                            <option value="licores">Vinos/Licor</option>
+                            <option value="bebidas_sin">Bebidas s/a</option>
+                            <option value="italiana">Pizzas/Pastas</option>
+                            <option value="fuertes">Carnes</option>
+                            <option value="tapas">Para Picar</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select id="categoria">
-                        <option value="cocteles">Cocteles</option>
-                        <option value="cervezas">Cervezas</option>
-                        <option value="licores">Vinos y Licores</option>
-                        <option value="bebidas_sin">Batidos y Jugos</option>
-                        <option value="italiana">Pizzas y Pastas</option>
-                        <option value="fuertes">Carnes</option>
-                        <option value="tapas">Para Picar</option>
-                    </select>
-                </div>
+                
                 <div class="form-group">
                     <label>Imagen</label>
-                    <input type="file" id="imagen-file" accept="image/*" required style="background:#333; color:white;">
+                    <input type="file" id="imagen-file" accept="image/*" required style="background:#333; color:white; font-size:0.8rem;">
                 </div>
                 <div class="form-group">
                     <label>Descripción</label>
-                    <textarea id="descripcion" rows="2"></textarea>
+                    <textarea id="descripcion" rows="2" placeholder="Ingredientes..."></textarea>
                 </div>
 
                 <div class="form-group" style="background:#2a2a2a; padding:10px; border-radius:5px; border:1px dashed #444;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <label style="margin:0; color:var(--gold);">Dato Curioso (IA)</label>
-                        <button type="button" id="btn-ia" onclick="generarCuriosidad()" style="background:var(--gold); border:none; border-radius:15px; padding:5px 10px; font-weight:bold; cursor:pointer; font-size:0.7rem;">✨ Generar con IA</button>
+                        <label style="margin:0; color:var(--gold);">Dato IA</label>
+                        <button type="button" id="btn-ia" onclick="generarCuriosidad()" style="background:linear-gradient(45deg, #FFD700, #ffab00); border:none; border-radius:20px; padding:4px 12px; font-weight:bold; cursor:pointer; font-size:0.7rem; color:black;">✨ Generar</button>
                     </div>
-                    <span id="loader-ia" style="display:none; color:#777; font-size:0.7rem;">🤖 Pensando...</span>
-                    <textarea id="curiosidad" rows="2" placeholder="Escribe el nombre arriba y pulsa el botón..."></textarea>
+                    <span id="loader-ia" style="display:none; color:#777; font-size:0.7rem; margin-top:5px;">🤖 Consultando historiador...</span>
+                    <textarea id="curiosidad" rows="2" placeholder="Se generará automáticamente..." style="margin-top:5px; border:none; background:#222; font-size:0.85rem; font-style:italic;"></textarea>
                 </div>
 
-                <div class="form-group" style="display:flex; align-items:center; gap:10px;">
-                    <input type="checkbox" id="destacado" style="width:auto;">
-                    <label for="destacado" style="margin:0;">Marcar como "Recomendado" 🌟</label>
+                <div class="form-group" style="display:flex; align-items:center; gap:10px; margin-top:10px;">
+                    <input type="checkbox" id="destacado" style="width:20px; height:20px;">
+                    <label for="destacado" style="margin:0; cursor:pointer;">Marcar como "Destacado"</label>
                 </div>
 
-                <button type="submit" class="btn-primary">GUARDAR</button>
+                <button type="submit" class="btn-primary" style="margin-top:10px;">GUARDAR PRODUCTO</button>
             </form>
         </div>
 
+        <h3 style="margin-bottom:15px; color:var(--gold);">Inventario</h3>
         <div id="lista-admin"></div>
     </div>
 

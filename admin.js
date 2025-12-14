@@ -1,15 +1,24 @@
-const CLAVE_SECRETA = "1234"; 
-if (prompt("🔒 Clave:") !== CLAVE_SECRETA) { window.location.href = "index.html"; }
+// 1. VERIFICACIÓN DE SEGURIDAD (Supabase Auth)
+// Si no hay usuario logueado, lo mandamos al login.html
+async function checkAuth() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+        window.location.href = "login.html";
+    } else {
+        // Solo cargamos el admin si hay sesión
+        cargarAdmin();
+    }
+}
 
-// CONFIGURACIÓN SUPABASE
-const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_ba5r8nJ5o49w1b9TURDLBA_EbMC_lWU'; 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+async function cerrarSesion() {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+}
 
-// 1. CARGAR LISTA
+// 2. CARGAR LISTA
 async function cargarAdmin() {
     const lista = document.getElementById('lista-admin');
-    lista.innerHTML = 'Cargando...';
+    lista.innerHTML = '<p style="text-align:center; color:#666;">Cargando...</p>';
 
     let { data: productos, error } = await supabaseClient
         .from('productos')
@@ -17,50 +26,51 @@ async function cargarAdmin() {
         .eq('activo', true)
         .order('id', { ascending: false });
 
-    if (error) { alert("Error al cargar"); return; }
-    lista.innerHTML = '';
-
-    productos.forEach(item => {
+    if (error) { alert("Error: " + error.message); return; }
+    
+    // Renderizado optimizado
+    const html = productos.map(item => {
         const esAgotado = item.estado === 'agotado';
-        const badge = esAgotado ? '<span class="status-agotado">AGOTADO</span>' : '<span class="status-disponible">OK</span>';
+        const badgeColor = esAgotado ? 'red' : 'green';
+        const badgeText = esAgotado ? 'AGOTADO' : 'DISPONIBLE';
         const favClass = item.destacado ? 'is-fav' : '';
-        
-        const div = document.createElement('div');
-        div.className = 'admin-item';
-        div.innerHTML = `
-            <div style="display:flex; align-items:center;">
-                <img src="${item.imagen_url}" alt="img">
-                <div class="item-details">
-                    <strong>${item.nombre}</strong> ($${item.precio})
-                    ${badge} ${item.destacado ? '🌟' : ''}
+        const img = item.imagen_url || 'https://via.placeholder.com/50';
+
+        return `
+            <div class="admin-item">
+                <img src="${img}" alt="img">
+                <div style="flex-grow:1;">
+                    <div style="font-weight:bold; color:white;">${item.nombre}</div>
+                    <div style="font-size:0.8rem; color:#888;">$${item.precio} <span style="color:${badgeColor}; margin-left:5px;">● ${badgeText}</span></div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-sm btn-star ${favClass}" onclick="toggleDestacado(${item.id}, ${item.destacado})">★</button>
+                    <button class="btn-sm btn-toggle" onclick="toggleEstado(${item.id}, '${item.estado}')">I/O</button>
+                    <button class="btn-sm btn-delete" onclick="eliminarProducto(${item.id})">X</button>
                 </div>
             </div>
-            <div class="item-actions">
-                <button class="btn-sm btn-star ${favClass}" onclick="toggleDestacado(${item.id}, ${item.destacado})">★</button>
-                <button class="btn-sm btn-toggle" onclick="toggleEstado(${item.id}, '${item.estado}')">I/O</button>
-                <button class="btn-sm btn-delete" onclick="eliminarProducto(${item.id})">X</button>
-            </div>
         `;
-        lista.appendChild(div);
-    });
+    }).join('');
+
+    lista.innerHTML = html;
 }
 
-// 2. GENERAR CURIOSIDAD CON IA (GOOGLE GEMINI)
+// 3. IA GEMINI (ACTUALIZADA)
 async function generarCuriosidad() {
     const nombre = document.getElementById('nombre').value;
     const campo = document.getElementById('curiosidad');
     const loader = document.getElementById('loader-ia');
     const btn = document.getElementById('btn-ia');
 
-    if (!nombre) { alert("Escribe primero el nombre del producto."); return; }
+    if (!nombre) { alert("Escribe el nombre del producto primero."); return; }
 
     btn.disabled = true; loader.style.display = "block"; campo.value = "";
 
-    // --- ¡PEGA TU CLAVE DE GOOGLE AQUÍ ABAJO! ---
-    const API_KEY = 'AIzaSyBNjg0xD2OVdBZ6EOe3bhSic73ilMrfGQI'; 
+    // Usamos la clave desde config.js
+    const API_KEY = CONFIG.GEMINI_KEY; 
     const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
 
-    const prompt = `Escribe un dato curioso histórico o cultural muy breve (máximo 20 palabras) sobre la comida o bebida: "${nombre}". No uses introducciones, ve directo al dato.`;
+    const prompt = `Escribe un dato curioso histórico, científico o cultural breve (máximo 25 palabras) sobre: "${nombre}". Tono interesante. Sin introducciones.`;
 
     try {
         const res = await fetch(URL, {
@@ -69,20 +79,26 @@ async function generarCuriosidad() {
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
         const data = await res.json();
-        campo.value = data.candidates[0].content.parts[0].text;
+        
+        if (data.candidates && data.candidates.length > 0) {
+            campo.value = data.candidates[0].content.parts[0].text;
+        } else {
+            campo.value = "No se pudo generar un dato.";
+        }
     } catch (e) {
         console.error(e);
-        alert("Error con la IA. Revisa tu API Key.");
+        alert("Error IA. Verifica la consola.");
     } finally {
         loader.style.display = "none"; btn.disabled = false;
     }
 }
 
-// 3. GUARDAR PRODUCTO
+// 4. GUARDAR PRODUCTO (Subida + Inserción)
 document.getElementById('form-producto').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
-    btn.textContent = "Subiendo..."; btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "Guardando..."; btn.disabled = true;
 
     try {
         const nombre = document.getElementById('nombre').value;
@@ -93,17 +109,20 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
         const destacado = document.getElementById('destacado').checked;
         const fileInput = document.getElementById('imagen-file');
 
-        if (fileInput.files.length === 0) throw new Error("Falta la imagen");
+        if (fileInput.files.length === 0) throw new Error("Debes seleccionar una imagen");
+        
+        // 1. Subir Imagen (Nombre único)
         const archivo = fileInput.files[0];
-        const nombreArchivo = Date.now() + '_' + archivo.name.replace(/\s/g, '');
+        const ext = archivo.name.split('.').pop();
+        const nombreArchivo = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${ext}`;
 
-        // Subir Imagen
         const { error: upErr } = await supabaseClient.storage.from('imagenes').upload(nombreArchivo, archivo);
         if (upErr) throw upErr;
 
+        // 2. Obtener URL
         const { data: urlData } = supabaseClient.storage.from('imagenes').getPublicUrl(nombreArchivo);
 
-        // Guardar Datos
+        // 3. Insertar en BD
         const { error: dbErr } = await supabaseClient.from('productos').insert([{
             nombre, precio, categoria, descripcion, curiosidad, destacado,
             imagen_url: urlData.publicUrl, estado: 'disponible', activo: true
@@ -111,18 +130,18 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
 
         if (dbErr) throw dbErr;
         
-        alert("¡Producto Guardado!");
+        alert("¡Producto creado con éxito!");
         document.getElementById('form-producto').reset();
         cargarAdmin();
 
     } catch (error) {
         alert("Error: " + error.message);
     } finally {
-        btn.textContent = "GUARDAR"; btn.disabled = false;
+        btn.textContent = originalText; btn.disabled = false;
     }
 });
 
-// 4. ACCIONES RAPIDAS
+// 5. ACCIONES
 async function toggleDestacado(id, val) {
     await supabaseClient.from('productos').update({ destacado: !val }).eq('id', id);
     cargarAdmin();
@@ -133,10 +152,11 @@ async function toggleEstado(id, estado) {
     cargarAdmin();
 }
 async function eliminarProducto(id) {
-    if(confirm("¿Eliminar?")) {
+    if(confirm("¿Seguro que quieres eliminar este producto?")) {
         await supabaseClient.from('productos').update({ activo: false }).eq('id', id);
         cargarAdmin();
     }
 }
 
-cargarAdmin();
+// Iniciar comprobación de seguridad
+document.addEventListener('DOMContentLoaded', checkAuth);
