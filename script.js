@@ -1,14 +1,14 @@
 // --- 1. CONFIGURACIÓN ---
 const SUPABASE_URL = 'https://qspwtmfmolvqlzsbwlzv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzcHd0bWZtb2x2cWx6c2J3bHp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODY0NjAsImV4cCI6MjA4MTI2MjQ2MH0.7QNMreDfX1wgjPVS3mz0T3cl_seQRZPaUruhAHKxPbY';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let todosLosProductos = [];
 
 // --- 2. CARGAR PRODUCTOS ---
 async function cargarMenu() {
     // Pedimos a la base de datos solo los productos activos (no los eliminados)
-    let { data: productos, error } = await supabase
+    let { data: productos, error } = await supabaseClient
         .from('productos')
         .select('*')
         .eq('activo', true) 

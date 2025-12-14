@@ -1,7 +1,17 @@
+// --- SEGURIDAD SIMPLE ---
+// Cambia "1234" por la contraseña que tú quieras
+const CLAVE_SECRETA = "1234"; 
+
+const entrada = prompt("🔒 Área restringida. Ingresa la contraseña de Administrador:");
+
+if (entrada !== CLAVE_SECRETA) {
+    alert("⛔ Contraseña incorrecta. Acceso denegado.");
+    window.location.href = "index.html"; // Lo devolvemos al menú público
+}
 // --- 1. CONFIGURACIÓN (MISMA QUE EN SCRIPT.JS) ---
 const SUPABASE_URL = 'TU_URL_DE_SUPABASE';
 const SUPABASE_KEY = 'TU_KEY_ANONIMA';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // --- 2. CARGAR LISTA PARA EDITAR ---
 async function cargarAdmin() {
