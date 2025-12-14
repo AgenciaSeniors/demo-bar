@@ -48,6 +48,7 @@ async function cargarMenu() {
 }
 
 // 2. RENDERIZAR (SIN ANIMACIONES OCULTAS)
+
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
     if (!contenedor) return;
@@ -55,20 +56,32 @@ function renderizarMenu(lista) {
     contenedor.innerHTML = '';
 
     if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía</h4><p>No hay productos disponibles.</p></div>';
+        contenedor.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><h4>Carta Vacía</h4></div>';
         return;
     }
 
     const html = lista.map(item => {
-        const claseAgotado = item.estado === 'agotado' ? 'agotado' : '';
-        const img = item.imagen_url || 'https://via.placeholder.com/300?text=Sin+Imagen';
-        const badge = item.destacado ? `<span class="badge-destacado">👑 TOP</span>` : '';
+        // Lógica Agotado
+        const esAgotado = item.estado === 'agotado';
+        const claseAgotado = esAgotado ? 'agotado' : '';
+        
+        // Si está agotado mostramos cartel ROJO, si es destacado mostramos corona
+        let badgeHTML = '';
+        if (esAgotado) {
+            badgeHTML = `<span class="badge-agotado">AGOTADO</span>`;
+        } else if (item.destacado) {
+            badgeHTML = `<span class="badge-destacado">👑 TOP</span>`;
+        }
+
+        const img = item.imagen_url || 'https://via.placeholder.com/300';
         const rating = item.ratingPromedio ? `★ ${item.ratingPromedio}` : '';
         
-        // CORRECCIÓN: Eliminado el style="animation..." y opacity:0
+        // Nota: Si está agotado, quitamos el onclick para que no abran el detalle
+        const accionClick = esAgotado ? '' : `onclick="abrirDetalle(${item.id})"`;
+
         return `
-            <div class="card ${claseAgotado}" onclick="abrirDetalle(${item.id})">
-                ${badge}
+            <div class="card ${claseAgotado}" ${accionClick}>
+                ${badgeHTML}
                 <div class="img-box"><img src="${img}" loading="lazy" alt="${item.nombre}"></div>
                 <div class="info">
                     <h3>${item.nombre}</h3>

@@ -174,3 +174,29 @@ body.admin-body {
         padding-top: 0 !important;
     }
 }
+/* --- style.css (Añadir al final) --- */
+
+/* Estilo para productos agotados en el menú */
+.card.agotado {
+    opacity: 0.7; /* Se ve un poco más transparente */
+    filter: grayscale(80%); /* Se ve en blanco y negro */
+    pointer-events: none; /* No se puede hacer clic */
+}
+
+.badge-agotado {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    background-color: #ff5252;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    border: 2px solid white;
+    border-radius: 8px;
+    z-index: 20;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
