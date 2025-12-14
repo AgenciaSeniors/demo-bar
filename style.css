@@ -396,3 +396,75 @@ body.admin-body {
 .btn-edit:hover { background: var(--gold); color: black; }
 .btn-del { background: rgba(255, 82, 82, 0.1); color: #ff5252; }
 .btn-del:hover { background: #ff5252; color: white; }
+/* --- OPTIMIZACIÓN MÓVIL (Mobile First Luxury) --- */
+@media (max-width: 768px) {
+    
+    /* 1. Ajuste del Contenedor Principal */
+    .container { 
+        padding: 15px 12px; /* Márgenes laterales más finos para ganar espacio */
+    }
+
+    /* 2. Rejilla Perfecta de 2 Columnas */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Fuerza 2 columnas siempre */
+        gap: 12px; /* Espacio elegante entre tarjetas (no muy separado) */
+    }
+
+    /* 3. Tarjetas Más Compactas */
+    .card {
+        border-radius: 16px; /* Bordes suavemente redondeados */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Sombra más ligera para rendimiento */
+    }
+
+    /* 4. Imagen Proporcionada */
+    .img-box {
+        height: 130px; /* Altura controlada para que no coman pantalla */
+    }
+    
+    /* 5. Tipografía Ajustada */
+    .info { 
+        padding: 12px 10px; /* Menos padding interno */
+    }
+    .card h3 {
+        font-size: 0.9rem; /* Título legible pero no gigante */
+        margin-bottom: 4px;
+        white-space: normal; /* Permitir que el título ocupe 2 líneas si es necesario */
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Cortar en la 2da línea */
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* 6. Precio y Rating en la misma línea */
+    .card-footer {
+        margin-top: 8px;
+    }
+    .price {
+        font-size: 1rem;
+    }
+    .rating-pill {
+        font-size: 0.65rem;
+        padding: 3px 6px;
+    }
+
+    /* 7. Ocultar descripción en la tarjeta (limpieza visual) */
+    /* En el celular, la descripción ensucia. Mejor que den clic para verla. */
+    .short-desc {
+        display: none; 
+    }
+
+    /* 8. Ajustes del Buscador y Filtros */
+    .search-wrapper { margin-top: -20px; padding: 0 15px; }
+    .search-box { padding: 8px 15px; }
+    #search-input { font-size: 0.95rem; padding: 8px 0; }
+    
+    .filters { padding: 0 15px; gap: 8px; }
+    .filter-btn { 
+        padding: 8px 16px; 
+        font-size: 0.8rem; 
+        border-radius: 100px; /* Botones tipo píldora más modernos */
+    }
+}
