@@ -1,5 +1,4 @@
-// --- admin.js ---
-// NOTA: Configuración ya cargada en config.js
+// (Configuración viene de config.js)
 
 // 1. SEGURIDAD
 async function checkAuth() {
@@ -51,9 +50,15 @@ async function cargarAdmin() {
                     <span class="item-status ${statusClass}">${statusText}</span>
                 </div>
                 <div class="action-btn-group">
-                    <button class="icon-btn" style="color:${favColor}; background:#222;" onclick="toggleDestacado(${item.id}, ${item.destacado})"><span class="material-icons">star</span></button>
-                    <button class="icon-btn btn-edit" onclick="toggleEstado(${item.id}, '${item.estado}')"><span class="material-icons">power_settings_new</span></button>
-                    <button class="icon-btn btn-del" onclick="eliminarProducto(${item.id})"><span class="material-icons">delete</span></button>
+                    <button class="icon-btn" style="color:${favColor}; background:#222;" onclick="toggleDestacado(${item.id}, ${item.destacado})" title="Destacar">
+                        <span class="material-icons">star</span>
+                    </button>
+                    <button class="icon-btn btn-edit" onclick="toggleEstado(${item.id}, '${item.estado}')" title="Cambiar Estado">
+                        <span class="material-icons">power_settings_new</span>
+                    </button>
+                    <button class="icon-btn btn-del" onclick="eliminarProducto(${item.id})" title="Eliminar">
+                        <span class="material-icons">delete</span>
+                    </button>
                 </div>
             </div>
         `;
@@ -62,20 +67,23 @@ async function cargarAdmin() {
     if (lista) lista.innerHTML = html || '<p style="text-align:center;">Inventario vacío.</p>';
 }
 
-// 3. IA GEMINI (USANDO MODELO ESTABLE)
+// 3. IA GEMINI (CORREGIDO Y ACTUALIZADO)
 async function generarCuriosidad() {
     const nombre = document.getElementById('nombre').value;
     const campo = document.getElementById('curiosidad');
     const loader = document.getElementById('loader-ia');
     const btn = document.getElementById('btn-ia');
 
-    if (!nombre) { alert("Escribe el nombre primero."); return; }
+    if (!nombre) { alert("Escribe el nombre del producto primero."); return; }
 
     btn.disabled = true; loader.style.display = "inline-block"; campo.value = "";
 
     const API_KEY = CONFIG.GEMINI_KEY; 
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
-    const prompt = `Escribe un dato curioso histórico o cultural breve (máximo 25 palabras) sobre: "${nombre}". Tono interesante. Sin introducciones.`;
+    
+    // CORRECCIÓN: Usamos 'gemini-1.5-flash' que es el estándar actual rápido y gratuito
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    
+    const prompt = `Escribe un dato curioso histórico, científico o cultural breve (máximo 25 palabras) sobre: "${nombre}". Tono interesante. Sin introducciones.`;
 
     try {
         const res = await fetch(URL, {
@@ -83,22 +91,31 @@ async function generarCuriosidad() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
+        
+        // Manejo explícito de errores HTTP (como el 404)
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error?.message || `Error ${res.status}`);
+        }
+
         const data = await res.json();
         
-        if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
             campo.value = data.candidates[0].content.parts[0].text.trim();
         } else {
-            campo.value = "No se pudo generar. Intenta de nuevo.";
+            campo.value = "No se pudo generar un dato curioso.";
         }
     } catch (e) {
-        console.error(e);
-        campo.value = "Error de conexión con IA.";
+        console.error("Error de IA:", e);
+        // Mensaje amigable en el campo de texto
+        campo.value = "Error conectando con IA. Intenta de nuevo en unos segundos.";
+        alert("Hubo un problema con la IA: " + e.message);
     } finally {
         loader.style.display = "none"; btn.disabled = false;
     }
 }
 
-// 4. GUARDAR
+// 4. GUARDAR PRODUCTO
 const form = document.getElementById('form-producto');
 if(form) {
     form.addEventListener('submit', async (e) => {
@@ -116,15 +133,20 @@ if(form) {
             const destacado = document.getElementById('destacado').checked;
             const fileInput = document.getElementById('imagen-file');
 
-            if (fileInput.files.length === 0) throw new Error("Falta la imagen");
+            if (fileInput.files.length === 0) throw new Error("Debes seleccionar una imagen");
+            
+            // 1. Subir Imagen
             const archivo = fileInput.files[0];
-            const nombreArchivo = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+            const ext = archivo.name.split('.').pop();
+            const nombreArchivo = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${ext}`;
 
             const { error: upErr } = await supabaseClient.storage.from('imagenes').upload(nombreArchivo, archivo);
             if (upErr) throw upErr;
 
+            // 2. Obtener URL
             const { data: urlData } = supabaseClient.storage.from('imagenes').getPublicUrl(nombreArchivo);
 
+            // 3. Insertar en BD
             const { error: dbErr } = await supabaseClient.from('productos').insert([{
                 nombre, precio, categoria, descripcion, curiosidad, destacado,
                 imagen_url: urlData.publicUrl, estado: 'disponible', activo: true
