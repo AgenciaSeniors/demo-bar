@@ -150,3 +150,27 @@ body.admin-body {
     .card h3 { font-size: 0.9rem; }
     .short-desc { display: none; }
 }
+/* --- AGREGA ESTO AL FINAL DE TU STYLE.CSS --- */
+
+/* Ajuste específico para que la foto del modal no sea gigante en el móvil */
+@media (max-width: 768px) {
+    .modal-img-full {
+        /* Reducimos la altura de 280px a 180px en celulares */
+        height: 180px !important; 
+        
+        /* Mantiene la imagen recortada y centrada para llenar el espacio sin deformarse.
+           Si prefieres ver la foto COMPLETA sin recortes (aunque queden bandas negras a los lados),
+           cambia 'cover' por 'contain'. */
+        object-fit: cover !important; 
+        
+        /* Ajustamos el desvanecido inferior para esta nueva altura */
+        mask-image: linear-gradient(to bottom, black 60%, transparent 100%) !important;
+        -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%) !important;
+    }
+    
+    /* Ajustamos el cuerpo del texto para que suba más */
+    .modal-body {
+        margin-top: -50px !important; /* Sube más el texto sobre la imagen */
+        padding-top: 0 !important;
+    }
+}
