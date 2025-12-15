@@ -104,7 +104,7 @@ async function generarCuriosidad() {
 
     const API_KEY = CONFIG.GEMINI_KEY; 
     // Usamos el modelo Flash por ser más rápido y estable
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${API_KEY}`;
+    const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
     const prompt = `Escribe un dato curioso muy breve (máximo 20 palabras) y divertido sobre: "${nombre}". Tono gastronómico.`;
 
     try {
