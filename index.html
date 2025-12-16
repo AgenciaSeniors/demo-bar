@@ -1,140 +1,111 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The Night Bar | Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="modal.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Night Bar | Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
 </head>
 <body>
 
-    <div id="toast-container"></div>
+    <div id="toast-container"></div>
 
-    <header class="hero-optimizado">
-        <img src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=800&q=70" 
-             class="hero-bg" alt="Ambiente">
-        <div class="overlay">
-            <div class="logo-area">
-                <h1>THE NIGHT BAR</h1>
-                <p>Coctelería de Autor & Gastronomía</p>
-            </div>
-        </div>
-    </header>
+    <header class="hero-optimizado">
+        <img src="https://images.unsplash.com/photo-1572116469696-31de0f17cc34?auto=format&fit=crop&w=800&q=70" 
+             class="hero-bg" alt="Ambiente">
+        <div class="overlay">
+            <div class="logo-area">
+                <h1>THE NIGHT BAR</h1>
+                <p>Coctelería de Autor & Gastronomía</p>
+            </div>
+        </div>
+    </header>
 
-    <div class="search-wrapper">
-        <div class="search-box">
-            <span class="search-icon">✦</span>
-            <input type="text" id="search-input" placeholder="Buscar cocteles, platos...">
-        </div>
-    </div>
+    <div class="search-wrapper">
+        <div class="search-box">
+            <span class="search-icon">✦</span>
+            <input type="text" id="search-input" placeholder="Buscar cocteles, platos...">
+        </div>
+    </div>
 
-    <div class="filters-container">
-        <nav class="filters">
-            <button class="filter-btn active" onclick="filtrar('todos', this)">⭐ Todo</button>
-            <button class="filter-btn" onclick="filtrar('cocteles', this)">🍸 Cocteles</button>
-            <button class="filter-btn" onclick="filtrar('cervezas', this)">🍺 Cervezas</button>
-            <button class="filter-btn" onclick="filtrar('licores', this)">🍷 Vinos</button>
-            <button class="filter-btn" onclick="filtrar('bebidas_sin', this)">🥤 Jugos</button>
-            <button class="filter-btn" onclick="filtrar('italiana', this)">🍕 Pizzas</button>
-            <button class="filter-btn" onclick="filtrar('fuertes', this)">🍖 Fuertes</button>
-            <button class="filter-btn" onclick="filtrar('tapas', this)">🍟 Picar</button>
-        </nav>
-    </div>
+    <div class="filters-container">
+        <nav class="filters">
+            <button class="filter-btn active" onclick="filtrar('todos', this)">⭐ Todo</button>
+            <button class="filter-btn" onclick="filtrar('cocteles', this)">🍸 Cocteles</button>
+            <button class="filter-btn" onclick="filtrar('cervezas', this)">🍺 Cervezas</button>
+            <button class="filter-btn" onclick="filtrar('licores', this)">🍷 Vinos</button>
+            <button class="filter-btn" onclick="filtrar('bebidas_sin', this)">🥤 Jugos</button>
+            <button class="filter-btn" onclick="filtrar('italiana', this)">🍕 Pizzas</button>
+            <button class="filter-btn" onclick="filtrar('fuertes', this)">🍖 Fuertes</button>
+            <button class="filter-btn" onclick="filtrar('tapas', this)">🍟 Picar</button>
+        </nav>
+    </div>
 
-    <main class="container">
-        <h3 class="section-title">Nuestra Carta</h3>
-        <div id="menu-grid" class="menu-grid">
-            </div>
-    </main>
+    <main class="container">
+        <h3 class="section-title">Nuestra Carta</h3>
+        <div id="menu-grid" class="menu-grid">
+            </div>
+    </main>
 
-    <footer>
-        <p>The Night Bar © 2025</p>
-        <a href="login.html" class="admin-link">🔒 Acceso Gerencial</a>
-    </footer>
+    <footer>
+        <p>The Night Bar © 2025</p>
+        <a href="login.html" class="admin-link">🔒 Acceso Gerencial</a>
+    </footer>
 
-    <div id="modal-detalle" class="modal-overlay" onclick="if(event.target == this) cerrarDetalle()">
-    <div class="modal-card">
-        <div class="btn-close-modal" onclick="cerrarDetalle()">✕</div>
-        
-        <div class="modal-image-wrapper">
-            <img id="det-img" src="" alt="Producto">
-        </div>
-        
-        <div class="modal-body-content">
-            <h2 id="det-titulo" class="modal-title-elegant">Nombre Producto</h2>
-            <span id="det-precio" class="modal-price-tag">$0.00</span>
-            
-            <p id="det-desc" class="modal-description">Descripción del producto...</p>
+    <div id="modal-detalle" class="modal-overlay" onclick="if(event.target == this) cerrarDetalle()">
+    <div class="modal-card">
+        <div class="btn-close-modal" onclick="cerrarDetalle()">✕</div>
+        
+        <div class="modal-image-wrapper">
+            <img id="det-img" src="" alt="Producto">
+        </div>
+        
+        <div class="modal-body-content">
+            <h2 id="det-titulo" class="modal-title-elegant">Nombre Producto</h2>
+            <span id="det-precio" class="modal-price-tag">$0.00</span>
+            
+            <p id="det-desc" class="modal-description">Descripción del producto...</p>
 
-            <div id="box-curiosidad" class="ia-badge" style="display:none;">
-                <span class="ia-title">✨ Curiosidad del Chef</span>
-                <p id="det-curiosidad" class="ia-text">...</p>
-            </div>
+            <div id="box-curiosidad" class="ia-badge" style="display:none;">
+                <span class="ia-title">✨ Curiosidad del Chef</span>
+                <p id="det-curiosidad" class="ia-text">...</p>
+            </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <span style="color:#666; font-size:0.8rem;">Valoración:</span>
-                <span id="det-rating-big" style="color:#FFD700; font-size:1.1rem; font-weight:bold;">★ 5.0</span>
-            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <span style="color:#666; font-size:0.8rem;">Valoración:</span>
+                <span id="det-rating-big" style="color:#FFD700; font-size:1.1rem; font-weight:bold;">★ 5.0</span>
+            </div>
 
-            <button class="btn-modal-action" onclick="abrirOpinionDesdeDetalle()">
-                Dejar Opinión
-            </button>
-            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
-    <p style="text-align: center; margin-bottom: 10px; font-weight: bold; color: #25D366; font-size: 0.9rem;">
-        ¿Lo quieres pedir ahora?
-    </p>
-    
-    <button id="btnOpenAddressModal" class="btn-whatsapp-new">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="margin-right:10px;">
-            <path d="M17.472 14.382C17.111 14.201 15.336 13.324 15.003 13.198C14.67 13.072 14.427 13.009 14.184 13.37C13.941 13.731 13.248 14.542 13.032 14.786C12.816 15.029 12.6 15.056 12.24 14.876C11.88 14.695 10.718 14.315 9.34 13.088C8.223 12.094 7.468 10.867 7.288 10.506C7.108 10.145 7.269 9.978 7.449 9.798C7.611 9.636 7.809 9.375 7.989 9.168C8.169 8.961 8.232 8.807 8.349 8.573C8.466 8.339 8.403 8.14 8.349 8.032C8.295 7.924 7.584 6.175 7.288 5.463C6.999 4.778 6.711 4.869 6.504 4.869C6.315 4.869 6.099 4.86 5.883 4.86C5.667 4.86 5.316 4.941 5.019 5.266C4.722 5.59 3.884 6.374 3.884 7.97C3.884 9.565 5.046 11.107 5.226 11.35C5.406 11.593 7.539 14.884 10.808 16.29C11.583 16.624 12.195 16.822 12.672 16.975C13.438 17.218 14.14 17.182 14.698 17.092C15.32 16.993 16.617 16.308 16.887 15.542C17.157 14.776 17.157 14.127 17.076 13.992C16.995 13.857 16.779 13.776 16.419 13.596H17.472V14.382Z"/>
-        </svg>
-        Pedir por WhatsApp
-    </button>
-</div>
-        </div>
-    </div>
+            <button class="btn-modal-action" onclick="abrirOpinionDesdeDetalle()">
+                Dejar Opinión
+            </button>
+        </div>
+    </div>
 </div>
 
-    <div id="modal-opinion" class="modal" onclick="if(event.target == this) cerrarModalOpiniones()">
-        <div class="modal-content" style="padding: 30px; text-align: center;">
-            <span class="close-btn-float" style="top:10px; right:10px;" onclick="cerrarModalOpiniones()">×</span>
-            
-            <h3 style="color:var(--gold); margin-bottom:20px; font-family:'Playfair Display', serif;">
-                Calificar Experiencia
-            </h3>
-            
-            <div class="stars" id="stars-container" style="font-size:3rem; color:#444; cursor:pointer; margin-bottom:20px;">
-                <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
-            </div>
-            
-            <input type="text" id="cliente-nombre" placeholder="Tu nombre (Opcional)" class="input-stylish" style="width:100%; margin-bottom:10px;">
-            <textarea id="cliente-comentario" rows="3" placeholder="¿Qué te pareció?" class="input-stylish" style="width:100%; margin-bottom:20px;"></textarea>
-            
-            <button class="btn-big-action" id="btn-enviar-opinion" onclick="enviarOpinion()">ENVIAR</button>
-        </div>
-    </div>
-<div id="addressModal" class="modal-overlay-new" style="display: none;" onclick="if(event.target == this) this.style.display='none'">
-    <div class="modal-box-new">
-        <span id="closeAddressBtn" class="close-x-new" onclick="document.getElementById('addressModal').style.display='none'">×</span>
-        
-        <h3 style="color:var(--dark-bg); font-family:'Playfair Display'; margin-bottom:10px;">
-            📍 ¿Dónde te lo llevamos?
-        </h3>
-        <p style="color:#666; font-size:0.9rem; margin-bottom:15px;">Escribe tu dirección exacta:</p>
-        
-        <textarea id="addressInput" class="input-stylish" placeholder="Ej: Calle Martí #45 entre A y B. (Casa azul)" rows="4" style="color: #333; background: #f9f9f9;"></textarea>
-        
-        <button id="btnSendFinalWhatsapp" class="btn-whatsapp-new" style="margin-top:15px;">
-            Confirmar y Enviar Pedido 🚀
-        </button>
-    </div>
-</div>
-    <script src="script.js"></script>
+    <div id="modal-opinion" class="modal" onclick="if(event.target == this) cerrarModalOpiniones()">
+        <div class="modal-content" style="padding: 30px; text-align: center;">
+            <span class="close-btn-float" style="top:10px; right:10px;" onclick="cerrarModalOpiniones()">×</span>
+            
+            <h3 style="color:var(--gold); margin-bottom:20px; font-family:'Playfair Display', serif;">
+                Calificar Experiencia
+            </h3>
+            
+            <div class="stars" id="stars-container" style="font-size:3rem; color:#444; cursor:pointer; margin-bottom:20px;">
+                <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+            </div>
+            
+            <input type="text" id="cliente-nombre" placeholder="Tu nombre (Opcional)" class="input-stylish" style="width:100%; margin-bottom:10px;">
+            <textarea id="cliente-comentario" rows="3" placeholder="¿Qué te pareció?" class="input-stylish" style="width:100%; margin-bottom:20px;"></textarea>
+            
+            <button class="btn-big-action" id="btn-enviar-opinion" onclick="enviarOpinion()">ENVIAR</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
-
 </html>
-
