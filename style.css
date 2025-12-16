@@ -1,124 +1,28 @@
 :root {
-    --bg-main: #0a0a0a;
-    --bg-surface: #141414;
-    --gold: #FFD700;
-    --gold-glow: rgba(255, 215, 0, 0.25);
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-    --red-danger: #ff5252;
-    --green-success: #00e676;
+    --bg-main: #0a0a0a;
+    --bg-surface: #141414;
+    --gold: #FFD700;
+    --gold-glow: rgba(255, 215, 0, 0.25);
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --red-danger: #ff5252;
+    --green-success: #00e676;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-body { 
-    background-color: var(--bg-main); 
-    color: var(--text-primary); 
-    font-family: 'Montserrat', sans-serif; 
-    padding-bottom: 100px;
-    overflow-x: hidden;
+body { 
+    background-color: var(--bg-main); 
+    color: var(--text-primary); 
+    font-family: 'Montserrat', sans-serif; 
+    padding-bottom: 100px;
+    overflow-x: hidden;
 }
 
 /* --- ESTILOS GENERALES (Menú Público) --- */
 .hero-optimizado { height: 35vh; position: relative; overflow: hidden; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; background: #000; box-shadow: 0 10px 40px -10px black; }
 .hero-bg { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 0; animation: zoomBg 20s infinite alternate; }
-/* ==================================================
-   CORRECCIÓN DE ESPACIO EXTRA EN LAS TARJETAS
-   (Pegar esto al final de style.css)
-================================================== */
-
-.menu-grid .card {
-    height: auto !important; /* Deja que la altura se ajuste sola */
-    display: flex !important;
-    flex-direction: column !important;
-}
-
-.menu-grid .card .info {
-    height: auto !important; /* La caja de texto también se ajusta sola */
-    flex-grow: 1 !important; /* Ocupa el espacio necesario */
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important; /* Mantiene el precio abajo */
-}
-
-.menu-grid .card .short-desc {
-    margin-bottom: 15px; /* Un poco de aire antes del precio */
-    /* Opcional: limitar a 2 líneas si la descripción es muy larga */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.card-footer {
-    margin-top: auto; /* Empuja el precio y rating al final de la tarjeta */
-}
-/* =====================================================
-   NUEVOS ESTILOS PARA EL PEDIDO A DOMICILIO (WHATSAPP)
-   Pegar esto al final de style.css
-===================================================== */
-
-/* 1. El Botón Verde de WhatsApp */
-.btn-whatsapp-new {
-    background: linear-gradient(135deg, #25D366, #128C7E); /* Degradado verde oficial */
-    color: white;
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 15px;
-    font-size: 1.1rem;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px -5px rgba(37, 211, 102, 0.5);
-}
-
-.btn-whatsapp-new:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 12px 25px -5px rgba(37, 211, 102, 0.7);
-    filter: brightness(1.1);
-}
-
-.btn-whatsapp-new:active {
-    transform: scale(0.98);
-}
-
-/* 2. El Fondo Oscuro del Nuevo Modal de Dirección */
-.modal-overlay-new {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(10, 10, 10, 0.85); /* Fondo oscuro semi-transparente */
-    z-index: 9999; /* Encima de todo lo demás */
-    display: flex; align-items: center; justify-content: center;
-    backdrop-filter: blur(8px); /* Efecto borroso moderno */
-    padding: 20px;
-}
-
-/* 3. La Caja Blanca del Modal de Dirección */
-.modal-box-new {
-    background: var(--bg-surface); /* Usa el fondo de tarjeta oscuro del tema */
-    border: var(--glass-border);
-    width: 100%; max-width: 420px;
-    border-radius: 25px; padding: 30px 25px;
-    position: relative; text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    animation: modalPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Animación de rebote al aparecer */
-}
-@keyframes modalPopIn { from{opacity:0; transform: scale(0.9);} to{opacity:1; transform: scale(1);} }
-
-/* 4. La X para cerrar el modal */
-.close-x-new {
-    position: absolute; top: 15px; right: 20px;
-    font-size: 28px; color: var(--text-secondary);
-    cursor: pointer; transition: 0.2s;
-    width: 36px; height: 36px; line-height: 36px;
-    border-radius: 50%; background: rgba(255,255,255,0.05);
-}
-.close-x-new:hover { color: var(--red-danger); background: rgba(255,82,82,0.1); transform: rotate(90deg); }
 @keyframes zoomBg { from { transform: scale(1); } to { transform: scale(1.1); } }
 .overlay { position: relative; z-index: 1; width: 100%; height: 100%; background: linear-gradient(to top, #0a0a0a 5%, rgba(0,0,0,0.5)); display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; }
 .logo-area h1 { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2.5rem; margin: 0; text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
@@ -152,27 +56,27 @@ body {
 .input-stylish:focus { border-color: var(--gold); background: #2a2a2a; }
 
 /* =========================================
-   ESTILOS EXCLUSIVOS ADMIN & LOGIN (NUEVOS)
-   ========================================= */
+   ESTILOS EXCLUSIVOS ADMIN & LOGIN (NUEVOS)
+   ========================================= */
 
-body.admin-body { 
-    background: radial-gradient(circle at 50% -20%, #1a1a20, #000); 
-    min-height: 100vh; 
+body.admin-body { 
+    background: radial-gradient(circle at 50% -20%, #1a1a20, #000); 
+    min-height: 100vh; 
 }
 
 /* LOGIN */
 .login-wrapper {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
-    background: url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&w=1000&q=60') center/cover;
-    position: relative;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    background: url('https://images.unsplash.com/photo-1566417713940-fe7c737a9ef2?auto=format&fit=crop&w=1000&q=60') center/cover;
+    position: relative;
 }
 .login-wrapper::before { content:''; position:absolute; inset:0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
 
 .login-card {
-    position: relative; z-index: 2;
-    background: rgba(30, 30, 35, 0.9); border: 1px solid rgba(255,215,0,0.1);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6); padding: 40px 30px;
-    border-radius: 20px; width: 100%; max-width: 400px; text-align: center;
+    position: relative; z-index: 2;
+    background: rgba(30, 30, 35, 0.9); border: 1px solid rgba(255,215,0,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6); padding: 40px 30px;
+    border-radius: 20px; width: 100%; max-width: 400px; text-align: center;
 }
 .login-logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 2rem; margin-bottom: 5px; text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
 .login-subtitle { color: #888; font-size: 0.85rem; margin-bottom: 30px; letter-spacing: 1px; }
@@ -182,29 +86,29 @@ body.admin-body {
 
 /* ADMIN DASHBOARD */
 .admin-header {
-    background: rgba(20, 20, 20, 0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100;
-    border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;
-    backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    background: rgba(20, 20, 20, 0.95); padding: 15px 20px; position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 .admin-title { font-family: 'Playfair Display', serif; color: white; margin: 0; font-size: 1.5rem; }
 .admin-badge { background: linear-gradient(45deg, var(--gold), #b8860b); color: black; padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; margin-left: 10px; }
 
-.dashboard-grid { 
-    display: grid; gap: 20px; padding: 20px; 
-    grid-template-columns: 1fr; /* Móvil por defecto */
+.dashboard-grid { 
+    display: grid; gap: 20px; padding: 20px; 
+    grid-template-columns: 1fr; /* Móvil por defecto */
 }
 @media(min-width: 768px) { .dashboard-grid { grid-template-columns: 350px 1fr; align-items: start; } }
 
 /* Zonas del Admin */
-.upload-zone, .inventory-zone { 
-    background: #1a1a20; padding: 25px; border-radius: 16px; 
-    border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+.upload-zone, .inventory-zone { 
+    background: #1a1a20; padding: 25px; border-radius: 16px; 
+    border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
 }
 
 .file-upload-wrapper {
-    position: relative; height: 120px; border: 2px dashed rgba(255,255,255,0.2);
-    border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.2);
+    position: relative; height: 120px; border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.2);
 }
 .file-upload-wrapper:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.05); }
 .file-upload-wrapper input { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
@@ -212,10 +116,10 @@ body.admin-body {
 
 /* Lista de Inventario */
 .inventory-list { margin-top: 10px; }
-.inventory-item { 
-    display: flex; align-items: center; gap: 15px; padding: 15px; 
-    border-bottom: 1px solid rgba(255,255,255,0.08); background: #1f1f23;
-    border-radius: 8px; margin-bottom: 10px; transition: 0.2s; 
+.inventory-item { 
+    display: flex; align-items: center; gap: 15px; padding: 15px; 
+    border-bottom: 1px solid rgba(255,255,255,0.08); background: #1f1f23;
+    border-radius: 8px; margin-bottom: 10px; transition: 0.2s; 
 }
 .inventory-item:hover { transform: translateX(5px); border-left: 3px solid var(--gold); }
 
@@ -229,10 +133,10 @@ body.admin-body {
 
 /* Botones de acción */
 .action-btn-group { display: flex; gap: 8px; }
-.icon-btn { 
-    width: 36px; height: 36px; border-radius: 8px; border: none; 
-    display: flex; align-items: center; justify-content: center; 
-    cursor: pointer; background: #2a2a30; color: #aaa; transition: 0.2s;
+.icon-btn { 
+    width: 36px; height: 36px; border-radius: 8px; border: none; 
+    display: flex; align-items: center; justify-content: center; 
+    cursor: pointer; background: #2a2a30; color: #aaa; transition: 0.2s;
 }
 .icon-btn:hover { color: white; transform: translateY(-2px); }
 .btn-star:hover { color: var(--gold); border: 1px solid var(--gold); }
@@ -241,94 +145,94 @@ body.admin-body {
 
 /* Media Queries */
 @media (max-width: 768px) {
-    .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .container { padding: 15px 12px; }
-    .card h3 { font-size: 0.9rem; }
-    
+    .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .container { padding: 15px 12px; }
+    .card h3 { font-size: 0.9rem; }
+    .short-desc { display: none; }
 }
 /* --- AGREGA ESTO AL FINAL DE TU STYLE.CSS --- */
 
 /* Ajuste específico para que la foto del modal no sea gigante en el móvil */
 @media (max-width: 768px) {
-    .modal-img-full {
-        /* Reducimos la altura de 280px a 180px en celulares */
-        height: 180px !important; 
-        
-        /* Mantiene la imagen recortada y centrada para llenar el espacio sin deformarse.
-           Si prefieres ver la foto COMPLETA sin recortes (aunque queden bandas negras a los lados),
-           cambia 'cover' por 'contain'. */
-        object-fit: cover !important; 
-        
-        /* Ajustamos el desvanecido inferior para esta nueva altura */
-        mask-image: linear-gradient(to bottom, black 60%, transparent 100%) !important;
-        -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%) !important;
-    }
-    
-    /* Ajustamos el cuerpo del texto para que suba más */
-    .modal-body {
-        margin-top: -50px !important; /* Sube más el texto sobre la imagen */
-        padding-top: 0 !important;
-    }
+    .modal-img-full {
+        /* Reducimos la altura de 280px a 180px en celulares */
+        height: 180px !important; 
+        
+        /* Mantiene la imagen recortada y centrada para llenar el espacio sin deformarse.
+           Si prefieres ver la foto COMPLETA sin recortes (aunque queden bandas negras a los lados),
+           cambia 'cover' por 'contain'. */
+        object-fit: cover !important; 
+        
+        /* Ajustamos el desvanecido inferior para esta nueva altura */
+        mask-image: linear-gradient(to bottom, black 60%, transparent 100%) !important;
+        -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%) !important;
+    }
+    
+    /* Ajustamos el cuerpo del texto para que suba más */
+    .modal-body {
+        margin-top: -50px !important; /* Sube más el texto sobre la imagen */
+        padding-top: 0 !important;
+    }
 }
 /* --- style.css (Añadir al final) --- */
 
 /* Estilo para productos agotados en el menú */
 .card.agotado {
-    opacity: 0.7; /* Se ve un poco más transparente */
-    filter: grayscale(80%); /* Se ve en blanco y negro */
-    pointer-events: none; /* No se puede hacer clic */
+    opacity: 0.7; /* Se ve un poco más transparente */
+    filter: grayscale(80%); /* Se ve en blanco y negro */
+    pointer-events: none; /* No se puede hacer clic */
 }
 
 .badge-agotado {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-10deg);
-    background-color: #ff5252;
-    color: white;
-    padding: 10px 20px;
-    font-weight: 900;
-    font-size: 1.2rem;
-    border: 2px solid white;
-    border-radius: 8px;
-    z-index: 20;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    background-color: #ff5252;
+    color: white;
+    padding: 10px 20px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    border: 2px solid white;
+    border-radius: 8px;
+    z-index: 20;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 /* --- style.css - Notificaciones Elegantes (Toasts) --- */
 
 #toast-container {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%); /* Centrado arriba */
-    z-index: 10000;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 90%;
-    max-width: 400px;
-    pointer-events: none; /* Para poder hacer clic "a través" si no hay toasts */
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Centrado arriba */
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    max-width: 400px;
+    pointer-events: none; /* Para poder hacer clic "a través" si no hay toasts */
 }
 
 .toast {
-    background: rgba(20, 20, 20, 0.95);
-    color: white;
-    padding: 16px 20px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    
-    /* Animación de entrada */
-    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    pointer-events: auto;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.9rem;
+    background: rgba(20, 20, 20, 0.95);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    
+    /* Animación de entrada */
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    pointer-events: auto;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
 }
 
 /* Borde izquierdo de color según tipo */
@@ -339,63 +243,10 @@ body.admin-body {
 .toast-msg { flex-grow: 1; }
 
 @keyframes slideIn {
-    from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes fadeOut {
-    to { opacity: 0; transform: translateY(-10px); }
-
-}
-
-/* ==================================================
-   CORRECCIÓN DEFINITIVA DE ALTURA Y ESPACIO EN TARJETAS
-   (Pegar esto al FINAL de style.css)
-================================================== */
-
-/* Asegurar que todas las tarjetas tengan la misma estructura flexible */
-.menu-grid .card {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100% !important; /* Ocupan toda la altura de la fila */
-    /* OPCIONAL: Si quieres tarjetas más chatas, descomenta la siguiente línea y ajusta el valor */
-    /* max-height: 280px; */ 
-}
-
-/* La imagen siempre tiene una altura fija */
-.menu-grid .card .img-box {
-    height: 150px !important; /* Altura fija para la imagen */
-    flex-shrink: 0 !important; /* No dejar que se achique */
-}
-
-/* El contenido se estira para llenar el espacio */
-.menu-grid .card .info {
-    display: flex !important;
-    flex-direction: column !important;
-    flex-grow: 1 !important;
-    padding: 12px !important;
-    justify-content: space-between !important; /* Empuja el precio al final */
-}
-
-/* Limitar la descripción a 2 líneas para que no rompa la altura */
-.menu-grid .card .short-desc {
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 10px !important;
-    font-size: 0.8rem; /* Un poco más pequeña en móvil */
-    color: var(--text-secondary);
-}
-
-/* Asegurar que el pie (precio/rating) siempre esté al final */
-.card-footer {
-    margin-top: auto !important;
-}
-
-/* Ajuste específico para móviles: reducir un poco el padding */
-@media (max-width: 768px) {
-    .menu-grid .card .info {
-        padding: 10px !important;
-    }
+    to { opacity: 0; transform: translateY(-10px); }
 }
