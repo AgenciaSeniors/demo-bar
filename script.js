@@ -1,4 +1,15 @@
 // --- script.js CORREGIDO ---
+// --- script.js CORREGIDO ---
+
+// === AGREGAR ESTA LÍNEA AL PRINCIPIO ===
+const NUMERO_WHATSAPP_NEGOCIO = "+5359063005"; // <-- ¡CAMBIA ESTO POR EL NÚMERO REAL!
+
+let searchTimeout;
+let todosLosProductos = [];
+let productoActual = null; // Esta variable es clave, ya la tienes y la usaremos.
+let puntuacion = 0;
+
+// ... resto del código ...
 
 let searchTimeout;
 let todosLosProductos = [];
@@ -278,4 +289,90 @@ function showToast(mensaje, tipo = 'success') {
         toast.style.animation = 'fadeOut 0.4s forwards';
         setTimeout(() => toast.remove(), 400); // Esperar a que termine la animación
     }, 4000);
+
 }
+// =====================================================
+// === NUEVA LÓGICA PARA PEDIDOS POR WHATSAPP ===
+// =====================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Obtenemos los elementos nuevos del HTML
+    const btnOpenAddressModal = document.getElementById('btnOpenAddressModal');
+    const addressModal = document.getElementById('addressModal');
+    const addressInput = document.getElementById('addressInput');
+    const btnSendFinalWhatsapp = document.getElementById('btnSendFinalWhatsapp');
+    const closeAddressBtn = document.getElementById('closeAddressBtn');
+
+    // --- 1. ABRIR MODAL DE DIRECCIÓN ---
+    if (btnOpenAddressModal) {
+        btnOpenAddressModal.addEventListener('click', () => {
+            // Primero cerramos el modal de detalle actual usando tu función existente
+            cerrarDetalle();
+
+            // Esperamos a que termine la animación de cierre (350ms según tu código)
+            // antes de mostrar el nuevo modal, para que se vea fluido.
+            setTimeout(() => {
+                addressModal.style.display = 'flex';
+                // Pequeña animación de entrada (opcional, si quieres que se vea como el otro)
+                // setTimeout(() => addressModal.classList.add('active'), 10); 
+                
+                addressInput.value = ""; // Limpiamos el campo
+                addressInput.focus();    // Ponemos el cursor listo para escribir
+            }, 350);
+        });
+    }
+
+    // --- 2. CERRAR MODAL DE DIRECCIÓN (Botón X) ---
+    // Nota: Tu HTML ya tiene un 'onclick' para cerrar en el fondo y la X, 
+    // pero agregamos esto por si acaso para asegurar la funcionalidad de la X.
+    if (closeAddressBtn) {
+        closeAddressBtn.addEventListener('click', () => {
+            // addressModal.classList.remove('active'); // Si usas animación
+            addressModal.style.display = 'none';
+        });
+    }
+
+    // --- 3. ENVIAR PEDIDO A WHATSAPP ---
+    if (btnSendFinalWhatsapp) {
+        btnSendFinalWhatsapp.addEventListener('click', () => {
+            const direccion = addressInput.value.trim();
+
+            // Validación simple
+            if (direccion === "") {
+                showToast("⚠️ Por favor, escribe una dirección de entrega.", "error");
+                addressInput.focus();
+                return;
+            }
+
+            // Validación de seguridad (raro que pase, pero por si acaso)
+            if (!productoActual || !productoActual.nombre) {
+                showToast("⚠️ Error: No se identificó el producto.", "error");
+                return;
+            }
+
+            // CONSTRUIR EL MENSAJE
+            // Usamos la variable global 'productoActual' que tu código ya actualiza al abrir el modal
+            const mensaje = `👋 Hola "The Night Bar"! Quisiera hacer un pedido a domicilio:
+
+🍽️ *Plato/Bebida:* ${productoActual.nombre}
+💲 *Precio:* $${productoActual.precio}
+📍 *Dirección de entrega:* ${direccion}
+
+Quedo a la espera de la confirmación y el costo del envío. ¡Gracias!`;
+
+            // Codificar el mensaje para URL
+            const mensajeCodificado = encodeURIComponent(mensaje);
+
+            // Crear el enlace final
+            const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP_NEGOCIO}?text=${mensajeCodificado}`;
+
+            // Abrir WhatsApp en nueva pestaña
+            window.open(urlWhatsApp, '_blank');
+
+            // Cerrar el modal de dirección y mostrar confirmación
+            // addressModal.classList.remove('active'); // Si usas animación
+            addressModal.style.display = 'none';
+            showToast("🚀 ¡Redirigiendo a WhatsApp para finalizar tu pedido!");
+        });
+    }
+});
