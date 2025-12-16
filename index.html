@@ -117,8 +117,24 @@
             <button class="btn-big-action" id="btn-enviar-opinion" onclick="enviarOpinion()">ENVIAR</button>
         </div>
     </div>
-
+<div id="addressModal" class="modal-overlay-new" style="display: none;" onclick="if(event.target == this) this.style.display='none'">
+    <div class="modal-box-new">
+        <span id="closeAddressBtn" class="close-x-new" onclick="document.getElementById('addressModal').style.display='none'">×</span>
+        
+        <h3 style="color:var(--dark-bg); font-family:'Playfair Display'; margin-bottom:10px;">
+            📍 ¿Dónde te lo llevamos?
+        </h3>
+        <p style="color:#666; font-size:0.9rem; margin-bottom:15px;">Escribe tu dirección exacta:</p>
+        
+        <textarea id="addressInput" class="input-stylish" placeholder="Ej: Calle Martí #45 entre A y B. (Casa azul)" rows="4" style="color: #333; background: #f9f9f9;"></textarea>
+        
+        <button id="btnSendFinalWhatsapp" class="btn-whatsapp-new" style="margin-top:15px;">
+            Confirmar y Enviar Pedido 🚀
+        </button>
+    </div>
+</div>
     <script src="script.js"></script>
 </body>
 
 </html>
+
