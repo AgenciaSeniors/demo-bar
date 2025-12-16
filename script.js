@@ -292,87 +292,71 @@ function showToast(mensaje, tipo = 'success') {
 
 }
 // =====================================================
-// === NUEVA LÓGICA PARA PEDIDOS POR WHATSAPP ===
+// === NUEVA LÓGICA PARA PEDIDOS POR WHATSAPP (VERSIÓN DE PRUEBA) ===
 // =====================================================
 
+// Esperamos a que todo el HTML esté cargado antes de buscar los botones
 document.addEventListener('DOMContentLoaded', () => {
-    // Obtenemos los elementos nuevos del HTML
+    console.log("✅ Iniciando la conexión de WhatsApp...");
+
     const btnOpenAddressModal = document.getElementById('btnOpenAddressModal');
     const addressModal = document.getElementById('addressModal');
     const addressInput = document.getElementById('addressInput');
     const btnSendFinalWhatsapp = document.getElementById('btnSendFinalWhatsapp');
     const closeAddressBtn = document.getElementById('closeAddressBtn');
 
-    // --- 1. ABRIR MODAL DE DIRECCIÓN ---
-    if (btnOpenAddressModal) {
-        btnOpenAddressModal.addEventListener('click', () => {
-            // Primero cerramos el modal de detalle actual usando tu función existente
-            cerrarDetalle();
+    // VERIFICACIÓN: ¿Existen los elementos?
+    if (!btnOpenAddressModal) console.error("❌ ERROR: No encuentro el botón verde 'btnOpenAddressModal' en el HTML.");
+    if (!addressModal) console.error("❌ ERROR: No encuentro el modal de dirección 'addressModal' en el HTML.");
 
-            // Esperamos a que termine la animación de cierre (350ms según tu código)
-            // antes de mostrar el nuevo modal, para que se vea fluido.
+    // --- 1. ABRIR MODAL DE DIRECCIÓN ---
+    if (btnOpenAddressModal && addressModal) {
+        btnOpenAddressModal.addEventListener('click', () => {
+            // 🔥 PRUEBA: Si ves esta alerta, el clic funciona 🔥
+            alert("¡CLIC DETECTADO! Intentando abrir el segundo modal...");
+
+            // Primero cerramos el modal de detalle actual
+            if (typeof cerrarDetalle === 'function') {
+                cerrarDetalle();
+            }
+
+            // Esperamos y abrimos el nuevo
             setTimeout(() => {
                 addressModal.style.display = 'flex';
-                // Pequeña animación de entrada (opcional, si quieres que se vea como el otro)
-                // setTimeout(() => addressModal.classList.add('active'), 10); 
-                
-                addressInput.value = ""; // Limpiamos el campo
-                addressInput.focus();    // Ponemos el cursor listo para escribir
+                if(addressInput) {
+                    addressInput.value = "";
+                    addressInput.focus();
+                }
             }, 350);
         });
+        console.log("✅ Botón verde conectado correctamente.");
     }
 
-    // --- 2. CERRAR MODAL DE DIRECCIÓN (Botón X) ---
-    // Nota: Tu HTML ya tiene un 'onclick' para cerrar en el fondo y la X, 
-    // pero agregamos esto por si acaso para asegurar la funcionalidad de la X.
-    if (closeAddressBtn) {
+    // --- 2. CERRAR MODAL (X) ---
+    if (closeAddressBtn && addressModal) {
         closeAddressBtn.addEventListener('click', () => {
-            // addressModal.classList.remove('active'); // Si usas animación
             addressModal.style.display = 'none';
         });
     }
 
-    // --- 3. ENVIAR PEDIDO A WHATSAPP ---
-    if (btnSendFinalWhatsapp) {
+    // --- 3. ENVIAR PEDIDO ---
+    if (btnSendFinalWhatsapp && addressInput) {
         btnSendFinalWhatsapp.addEventListener('click', () => {
             const direccion = addressInput.value.trim();
-
-            // Validación simple
             if (direccion === "") {
-                showToast("⚠️ Por favor, escribe una dirección de entrega.", "error");
+                showToast("⚠️ Escribe una dirección.", "error");
                 addressInput.focus();
                 return;
             }
+            
+            // Usamos la variable global 'productoActual'
+            if (!productoActual) { alert("Error: No hay producto seleccionado"); return;}
 
-            // Validación de seguridad (raro que pase, pero por si acaso)
-            if (!productoActual || !productoActual.nombre) {
-                showToast("⚠️ Error: No se identificó el producto.", "error");
-                return;
-            }
+            const mensaje = `👋 Hola The Night Bar! Pedido a domicilio:\n\n🍽️ *Plato:* ${productoActual.nombre}\n💲 *Precio:* $${productoActual.precio}\n📍 *Dirección:* ${direccion}`;
+            window.open(`https://wa.me/${NUMERO_WHATSAPP_NEGOCIO}?text=${encodeURIComponent(mensaje)}`, '_blank');
 
-            // CONSTRUIR EL MENSAJE
-            // Usamos la variable global 'productoActual' que tu código ya actualiza al abrir el modal
-            const mensaje = `👋 Hola "The Night Bar"! Quisiera hacer un pedido a domicilio:
-
-🍽️ *Plato/Bebida:* ${productoActual.nombre}
-💲 *Precio:* $${productoActual.precio}
-📍 *Dirección de entrega:* ${direccion}
-
-Quedo a la espera de la confirmación y el costo del envío. ¡Gracias!`;
-
-            // Codificar el mensaje para URL
-            const mensajeCodificado = encodeURIComponent(mensaje);
-
-            // Crear el enlace final
-            const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP_NEGOCIO}?text=${mensajeCodificado}`;
-
-            // Abrir WhatsApp en nueva pestaña
-            window.open(urlWhatsApp, '_blank');
-
-            // Cerrar el modal de dirección y mostrar confirmación
-            // addressModal.classList.remove('active'); // Si usas animación
             addressModal.style.display = 'none';
-            showToast("🚀 ¡Redirigiendo a WhatsApp para finalizar tu pedido!");
+            showToast("🚀 ¡Abriendo WhatsApp!");
         });
     }
 });
