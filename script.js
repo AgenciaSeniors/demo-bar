@@ -279,4 +279,5 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400); // Esperar a que termine la animación
     }, 4000);
 } 
-este es mi codigo en js, q tengo q agregar aqui?
+
+
