@@ -11,3 +11,4 @@ const CONFIG = {
 //SUPABASE_URL https://supabase.com/dashboard/project/mvtatdvpsjynvayhhksc/settings/api ====== Project URL
 const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
 
+
