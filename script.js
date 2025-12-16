@@ -215,12 +215,12 @@ async function enviarOpinion() {
     }]);
 
     if (!error) {
-        alert("¡Gracias!");
+        showToast("¡Gracias! Tu opinión ha sido registrada.", "success");
         cerrarModalOpiniones();
         document.getElementById('cliente-comentario').value = "";
         cargarMenu(); 
     } else {
-        alert("Error: " + error.message);
+        showToast("Error: " + error.message, "error");
     }
     if(btn) { btn.textContent = "ENVIAR"; btn.disabled = false; }
 }
@@ -253,3 +253,29 @@ if(searchInput) {
 }
 
 document.addEventListener('DOMContentLoaded', cargarMenu);
+
+// --- SISTEMA DE NOTIFICACIONES PREMIUM ---
+function showToast(mensaje, tipo = 'success') {
+    const container = document.getElementById('toast-container');
+    if(!container) return;
+
+    // Crear el elemento HTML
+    const toast = document.createElement('div');
+    toast.className = `toast ${tipo}`;
+    
+    // Icono según tipo
+    const icono = tipo === 'success' ? '✨' : '⚠️';
+    
+    toast.innerHTML = `
+        <span class="toast-icon">${icono}</span>
+        <span class="toast-msg">${mensaje}</span>
+    `;
+
+    // Agregar al contenedor
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.4s forwards';
+        setTimeout(() => toast.remove(), 400); // Esperar a que termine la animación
+    }, 4000);
+}
