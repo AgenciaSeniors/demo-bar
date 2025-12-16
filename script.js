@@ -6,13 +6,6 @@ const NUMERO_WHATSAPP_NEGOCIO = "+5359063005"; // <-- ¡CAMBIA ESTO POR EL NÚME
 
 let searchTimeout;
 let todosLosProductos = [];
-let productoActual = null; // Esta variable es clave, ya la tienes y la usaremos.
-let puntuacion = 0;
-
-// ... resto del código ...
-
-let searchTimeout;
-let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
@@ -289,7 +282,6 @@ function showToast(mensaje, tipo = 'success') {
         toast.style.animation = 'fadeOut 0.4s forwards';
         setTimeout(() => toast.remove(), 400); // Esperar a que termine la animación
     }, 4000);
-
 }
 // =====================================================
 // === NUEVA LÓGICA PARA PEDIDOS POR WHATSAPP (VERSIÓN DE PRUEBA) ===
@@ -360,3 +352,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
