@@ -3,18 +3,18 @@ let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-// 1. CARGAR MENÚ - Solución definitiva para error de múltiples relaciones
+// 1. CARGAR MENÚ - Solución Forzada para Ambigüedad Relacional
 async function cargarMenu() {
     const grid = document.getElementById('menu-grid');
     if (grid) grid.innerHTML = '<p style="text-align:center; color:#888; grid-column:1/-1; padding:40px;">Cargando carta...</p>';
 
     try {
         if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-             throw new Error("Error de configuración: supabaseClient no definido.");
+             throw new Error("supabaseClient no definido. Revisa config.js.");
         }
 
-        // CAMBIO CLAVE: Usamos 'opiniones!producto_id' para romper la ambigüedad
-        // Esto le dice a Supabase: "Usa la relación que utiliza la columna producto_id"
+        // Usamos una sintaxis ultra-específica: nombre_tabla!nombre_columna_relacion
+        // Esto obliga a Supabase a ignorar cualquier otra relación que no sea 'producto_id'
         let { data: productos, error } = await supabaseClient
             .from('productos')
             .select(`
@@ -28,34 +28,32 @@ async function cargarMenu() {
             .order('id', { ascending: false });
 
         if (error) {
-            console.error("Error detallado de Supabase:", error);
-            throw error;
+            console.error("Error técnico de Supabase:", error);
+            throw new Error(error.message);
         }
 
-        if (!productos || productos.length === 0) {
-             todosLosProductos = [];
-        } else {
-            todosLosProductos = productos.map(prod => {
-                // Supabase devolverá la relación con el nombre de la tabla
-                const listaOpiniones = prod.opiniones || [];
-                const total = listaOpiniones.length;
-                const suma = listaOpiniones.reduce((acc, curr) => acc + (curr.puntuacion || 0), 0);
-                prod.ratingPromedio = total ? (suma / total).toFixed(1) : null;
-                return prod;
-            });
-        }
+        todosLosProductos = (productos || []).map(prod => {
+            // El resultado vendrá dentro de la propiedad 'opiniones'
+            const listaOpiniones = prod.opiniones || [];
+            const total = listaOpiniones.length;
+            const suma = listaOpiniones.reduce((acc, curr) => acc + (curr.puntuacion || 0), 0);
+            prod.ratingPromedio = total ? (suma / total).toFixed(1) : null;
+            return prod;
+        });
 
         renderizarMenu(todosLosProductos);
 
     } catch (err) {
-        console.error("Error en cargarMenu:", err);
+        console.error("Error crítico en cargarMenu:", err);
         if (grid) {
             grid.innerHTML = `<div style="text-align:center; color:#ff5252; grid-column:1/-1; padding:20px;">
-                                <h4>Error de Carga</h4>
-                                <p style="font-size:0.9rem;">No se pudieron mostrar los productos.</p>
+                                <h4>Error de Estructura de Datos</h4>
+                                <p style="font-size:0.9rem;">${err.message}</p>
+                                <p style="font-size:0.8rem; color:#666; margin-top:10px;">Intenta recargar con Ctrl+F5</p>
                               </div>`;
         }
     }
+}
 }
 // 2. RENDERIZAR
 function renderizarMenu(lista) {
@@ -264,6 +262,7 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
 
 
