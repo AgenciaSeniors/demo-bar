@@ -3,26 +3,22 @@ let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-// 1. CARGAR MENÚ
-// 1. CARGAR MENÚ (BLOQUE COMPLETO PARA REEMPLAZAR)
+// 1. CARGAR MENÚ - Versión corregida para error PGRST201
 async function cargarMenu() {
     const grid = document.getElementById('menu-grid');
     if (grid) grid.innerHTML = '<p style="text-align:center; color:#888; grid-column:1/-1; padding:40px;">Cargando carta...</p>';
 
     try {
-        // Verificación de la conexión con Supabase
+        // Verificación de la conexión
         if (typeof supabaseClient === 'undefined' || !supabaseClient) {
              console.error("CRÍTICO: supabaseClient no existe. Revisa config.js.");
-             throw new Error("Error de configuración: No se puede conectar a la base de datos.");
+             throw new Error("Error de configuración de base de datos.");
         }
 
-        // CORRECCIÓN PARA ERROR PGRST201: Especificamos la relación exacta (!producto_id)
+        // CORRECCIÓN: Usamos la relación explícita "!producto_id" para resolver la ambigüedad
         let { data: productos, error } = await supabaseClient
             .from('productos')
-            .select(`
-                *,
-                opiniones!producto_id (puntuacion)
-            `)
+            .select(`*,opiniones!producto_id (puntuacion)`)
             .eq('activo', true)
             .order('destacado', { ascending: false })
             .order('id', { ascending: false });
@@ -32,10 +28,10 @@ async function cargarMenu() {
             throw error;
         }
 
-        // Procesar productos y calcular ratings
         if (!productos) {
              todosLosProductos = [];
         } else {
+            // Calcular ratings promedio
             todosLosProductos = productos.map(prod => {
                 const opiniones = prod.opiniones || [];
                 const total = opiniones.length;
@@ -45,16 +41,17 @@ async function cargarMenu() {
             });
         }
 
-        // Llamar a la función que dibuja el menú en pantalla
+        // Mostrar los productos en el HTML
         renderizarMenu(todosLosProductos);
 
     } catch (err) {
         console.error("Error FINAL en cargarMenu:", err);
-        if (grid) grid.innerHTML = `<div style="text-align:center; color:#ff5252; grid-column:1/-1; padding:20px;">
-                            <h4>Error de Conexión</h4>
-                            <p style="font-size:0.9rem;">No se pudieron cargar los productos.</p>
-                            <p style="font-size:0.8rem; color:#666;">Revisa la consola para más detalles.</p>
-                          </div>`;
+        if (grid) {
+            grid.innerHTML = `<div style="text-align:center; color:#ff5252; grid-column:1/-1; padding:20px;">
+                                <h4>Error de Conexión</h4>
+                                <p style="font-size:0.9rem;">No se pudieron cargar los productos.</p>
+                              </div>`;
+        }
         todosLosProductos = []; 
     }
 }
@@ -266,6 +263,7 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
 
 
