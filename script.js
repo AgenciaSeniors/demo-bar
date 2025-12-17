@@ -3,7 +3,7 @@ let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-// 1. CARGAR MENÚ - Versión Final sin errores de sintaxis
+// 1. CARGAR MENÚ - Versión corregida y verificada
 async function cargarMenu() {
     const grid = document.getElementById('menu-grid');
     if (grid) grid.innerHTML = '<p style="text-align:center; color:#888; grid-column:1/-1; padding:40px;">Cargando carta...</p>';
@@ -13,7 +13,7 @@ async function cargarMenu() {
              throw new Error("supabaseClient no definido. Revisa config.js.");
         }
 
-        // Consulta específica para evitar la ambigüedad de relaciones (PGRST201)
+        // Usamos la relación explícita detectada en tu Schema (producto_id)
         const { data: productos, error } = await supabaseClient
             .from('productos')
             .select(`
@@ -52,6 +52,9 @@ async function cargarMenu() {
         }
     }
 }
+
+// AQUÍ EMPIEZA TU FUNCIÓN SIGUIENTE, NO LA BORRES:
+// function renderizarMenu(lista) { ...
 
 // 2. RENDERIZAR
 function renderizarMenu(lista) {
@@ -260,6 +263,7 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
 
 
