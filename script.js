@@ -3,7 +3,7 @@ let todosLosProductos = [];
 let productoActual = null;
 let puntuacion = 0;
 
-// 1. CARGAR MENÚ - Solución definitiva Ambigüedad PGRST201
+// 1. CARGAR MENÚ - Solución definitiva para error de múltiples relaciones
 async function cargarMenu() {
     const grid = document.getElementById('menu-grid');
     if (grid) grid.innerHTML = '<p style="text-align:center; color:#888; grid-column:1/-1; padding:40px;">Cargando carta...</p>';
@@ -13,9 +13,8 @@ async function cargarMenu() {
              throw new Error("Error de configuración: supabaseClient no definido.");
         }
 
-        // CAMBIO CRÍTICO: Usamos la sintaxis de relación con alias forzado
-        // La sintaxis 'opiniones!producto_id' le dice a Supabase: 
-        // "Usa la relación donde producto_id es la llave foránea"
+        // CAMBIO CLAVE: Usamos 'opiniones!producto_id' para romper la ambigüedad
+        // Esto le dice a Supabase: "Usa la relación que utiliza la columna producto_id"
         let { data: productos, error } = await supabaseClient
             .from('productos')
             .select(`
@@ -29,7 +28,7 @@ async function cargarMenu() {
             .order('id', { ascending: false });
 
         if (error) {
-            console.error("Error de Supabase:", error);
+            console.error("Error detallado de Supabase:", error);
             throw error;
         }
 
@@ -37,7 +36,7 @@ async function cargarMenu() {
              todosLosProductos = [];
         } else {
             todosLosProductos = productos.map(prod => {
-                // Manejamos el caso de que opiniones sea null o undefined
+                // Supabase devolverá la relación con el nombre de la tabla
                 const listaOpiniones = prod.opiniones || [];
                 const total = listaOpiniones.length;
                 const suma = listaOpiniones.reduce((acc, curr) => acc + (curr.puntuacion || 0), 0);
@@ -49,11 +48,11 @@ async function cargarMenu() {
         renderizarMenu(todosLosProductos);
 
     } catch (err) {
-        console.error("Error capturado en cargarMenu:", err);
+        console.error("Error en cargarMenu:", err);
         if (grid) {
             grid.innerHTML = `<div style="text-align:center; color:#ff5252; grid-column:1/-1; padding:20px;">
-                                <h4>Error de Conexión</h4>
-                                <p style="font-size:0.9rem;">${err.message || 'No se pudieron cargar los productos.'}</p>
+                                <h4>Error de Carga</h4>
+                                <p style="font-size:0.9rem;">No se pudieron mostrar los productos.</p>
                               </div>`;
         }
     }
@@ -265,6 +264,7 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
 
 
