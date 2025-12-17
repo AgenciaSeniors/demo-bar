@@ -18,7 +18,7 @@ async function cargarMenu() {
             .from('productos')
             .select(`
                 *,
-                opiniones!producto_id (
+                opiniones!opiniones_producto_id_fkey (
                     puntuacion
                 )
             `)
@@ -263,6 +263,7 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
 
 
