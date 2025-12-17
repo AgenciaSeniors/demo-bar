@@ -54,7 +54,7 @@ async function cargarMenu() {
         }
     }
 }
-}
+
 // 2. RENDERIZAR
 function renderizarMenu(lista) {
     const contenedor = document.getElementById('menu-grid');
@@ -262,6 +262,7 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
 
 
