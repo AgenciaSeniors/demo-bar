@@ -18,7 +18,7 @@ async function cargarMenu() {
         // Cargar productos
         let { data: productos, error } = await supabaseClient
             .from('productos')
-            .select('*, opiniones!producto_id(puntuacion)')
+            .select('*, opiniones!id_producto(puntuacion)')
             .eq('activo', true)
             .order('destacado', { ascending: false })
             .order('id', { ascending: false });
@@ -263,4 +263,5 @@ function showToast(mensaje, tipo = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 3000);
 }
+
 
